@@ -40,7 +40,19 @@ on Advances in Enterprise Architecture), Track 5 — Data Analytics, BI and Deci
 - [docs/proposal.md](docs/proposal.md) — the original idea (Persian)
 - [docs/research.md](docs/research.md) — analysis of the idea, pitfalls, related work and state-of-the-art technology
 - [docs/roadmap.md](docs/roadmap.md) — phased roadmap from baseline to production
-- [docs/conference.md](docs/conference.md) — ICAEA 2026 requirements and dates
+- [docs/conference/](docs/conference/README.md) — ICAEA 2026 requirements, dates, templates and forms
+
+## Repository layout
+
+```
+docs/
+  proposal.md        original idea (Persian)
+  research.md        analysis, pitfalls, related work, technology landscape
+  roadmap.md         phased plan and publication path
+  conference/        ICAEA 2026 notes + official templates and forms
+```
+
+Code (`src/`), notebooks and the paper draft (`paper/`) will be added as the work starts.
 
 ## Data policy
 

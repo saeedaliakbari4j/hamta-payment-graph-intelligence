@@ -39,8 +39,15 @@ To fit an EA conference, frame the work as an intelligent decision-support capab
 payment company's architecture (data → governance/anonymization → graph analytics → model →
 campaign/CRM), not only as a model.
 
-## Files
+## Files (official, downloaded from the conference site)
 
-- Templates: `/Areas/Panel/Hamayesh/2005/Files/فرمت_فارسی_مقالات.doc`, `ResearchPaperWritingFormatTemplate.doc`
-- Call for papers: `CallForPaper-Persian_.pdf`, `CallForPapers-English_.pdf`
-- Contact: icaea@sbu.ac.ir, +98 21 22424572
+| File | Purpose |
+|---|---|
+| [files/call-for-papers-fa.pdf](files/call-for-papers-fa.pdf) | Persian call for papers + track details |
+| [files/call-for-papers-en.pdf](files/call-for-papers-en.pdf) | English call for papers + track details |
+| [files/paper-template-fa.doc](files/paper-template-fa.doc) | Persian paper template (B Mitra, two-column) |
+| [files/paper-template-en-ieee.doc](files/paper-template-en-ieee.doc) | English IEEE paper template |
+| [files/ai-use-declaration-policy-fa.pdf](files/ai-use-declaration-policy-fa.pdf) | Generative-AI use policy |
+| [files/ai-use-declaration-form-fa.docx](files/ai-use-declaration-form-fa.docx) | AI-use declaration form (fill in, submit as Word) |
+
+Contact: icaea@sbu.ac.ir, +98 21 22424572
