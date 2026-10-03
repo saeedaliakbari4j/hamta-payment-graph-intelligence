@@ -1,0 +1,28 @@
+# Never commit transaction data or credentials
+data/
+*.csv
+*.parquet
+*.feather
+*.pkl
+*.xlsx
+*.db
+*.duckdb
+.env
+secrets/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Experiment artifacts
+mlruns/
+outputs/
+models/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
