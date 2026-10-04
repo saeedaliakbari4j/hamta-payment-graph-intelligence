@@ -1,0 +1,6 @@
+latent_cluster,persona_name_fa,persona_name_en,num_cards,total_volume,mean_ticket_size,dominant_guild,dominant_guild_en,dominant_guild_pct,unique_merchants,avg_tx_per_card
+0,تجار و عمده‌فروشان آهن و مصالح صنعتی,B2B Wholesalers & Industrial Commerce,289,253385443080.0,36829279.51744186,آهن‌آلات و مصالح صنعتی,B2B Wholesalers & Industrial Materials,0.6149709302325581,343,23.80622837370242
+1,مایحتاج روزمره و مصرف خانوار,Everyday Household & Groceries,295,27418613379.0,3804441.9840432913,سوپرمارکت و خواروبار,Supermarkets & Groceries,0.5418343277369224,347,24.43050847457627
+2,سرمایه‌گذاران طلا و کالای لوکس,Gold & Luxury Investors,299,112620231030.0,17385031.03272615,طلافروشی,Gold & Jewelry Stores,0.5625192960790367,309,21.665551839464882
+3,مسافران و گردشگران پریمیوم,Affluent Travelers & Tourism,299,73745367216.0,10432220.570943557,آژانس مسافرتی و گردشگری,Travel Agencies & Tourism,0.47885132267647473,308,23.642140468227424
+4,مصرف‌کنندگان خدمات پزشکی و سلامت,Healthcare & Pharmacy Consumers,298,29846710506.0,4051956.3543307087,خدمات پزشکی و داروخانه,Medical Clinics & Pharmacies,0.5329894108064078,347,24.71812080536913
