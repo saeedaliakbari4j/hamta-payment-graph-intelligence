@@ -63,12 +63,14 @@ Ingests streaming records, applies PCI-DSS card masking, and extracts a 16-dimen
 Shannon guild entropy is computed as:
 $$\mathcal{H}_{\text{guild}}(u) = -\sum_{k=1}^{|\mathcal{G}|} p_{uk} \ln(p_{uk} + \epsilon)$$
 
-### B. Tier 2: Hypergraph Projection & Forman-Ricci Curvature
-We model transactions as a bipartite hypergraph $\mathcal{H} = (\mathcal{V}_{\text{card}}, \mathcal{V}_{\text{merch}}, \mathcal{E})$. We compute the projected card-card cosine affinity matrix $\mathbf{W} \in \mathbb{R}^{N \times N}$. For every edge $e = (u, v)$, the discrete Forman-Ricci curvature $\mathbf{F}(u, v)$ is computed as:
+### B. Tier 2: Bipartite Projection & Discrete Forman-Ricci Curvature
+Transaction events are initially formalized as a bipartite interaction structure $\mathcal{B} = (\mathcal{V}_{\text{card}}, \mathcal{V}_{\text{merch}}, \mathcal{E})$. To uncover direct behavioral affinities between cardholders, we project this bipartite structure into a weighted card co-occurrence graph $G = (\mathcal{V}_{\text{card}}, \mathcal{E}_G, \mathbf{W})$. Edge weights $w_{uv} \in [0, 1]$ are determined by the cosine similarity of the cards' guild spending profiles:
+$$w_{uv} = \frac{\mathbf{b}_u \cdot \mathbf{b}_v}{\|\mathbf{b}_u\| \|\mathbf{b}_v\|}$$
+Edges with affinity below an empirical threshold are pruned to preserve graph sparsity. Crucially, discrete Forman-Ricci curvature $\mathbf{F}(u, v)$ is computed specifically over the edges of this projected card-card graph $G$ (not directly on the bipartite incidence matrix):
 
 $$\mathbf{F}(u, v) = \frac{4 - d(u) - d(v) + 3\Delta(u, v)}{\sqrt{d(u)d(v)}}$$
 
-where $d(u)$ denotes node degree and $\Delta(u, v)$ is the number of shared triangles on edge $(u, v)$. Negative curvature denotes inter-cluster bridging edges (liquidity corridors), while positive curvature identifies dense intra-community clusters.
+where $d(u)$ denotes node degree in $G$ and $\Delta(u, v)$ is the number of shared triangles formed by edge $(u, v)$ in $G$. Negative curvature identifies inter-cluster bridging edges (liquidity corridors), while positive curvature marks dense intra-community spending clusters.
 
 ### C. Tier 3: Curvature-Attentive Graph Autoencoder (HG-CAN)
 In head $k$, the curvature-modulated attention coefficient $\alpha_{uv}^{(k)}$ is given by:
