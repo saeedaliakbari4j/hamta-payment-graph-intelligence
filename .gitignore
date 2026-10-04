@@ -2,17 +2,25 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
 
 # Caches and environment
-.pytest_cache/
 .vscode/
 .idea/
+.env
+secrets/
 
 # Scratch and intermediate scripts
 inspect_*.py
 scratch_*.png
 template_*.txt
 *.tmp
+
+# Experiment artifacts
+mlruns/
 
 # OS generated files
 Thumbs.db
