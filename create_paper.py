@@ -106,15 +106,15 @@ def build_word_document():
     run_title.font.size = Pt(20)
     run_title.bold = True
 
-    # Authors
+    # Authors (Standard Clean Academic Placeholder for Submission)
     p_auth = doc.add_paragraph()
     p_auth.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_auth.paragraph_format.space_after = Pt(16)
 
-    run_auth1 = p_auth.add_run("Financial Technology & Payment Systems Intelligence Laboratory\n")
+    run_auth1 = p_auth.add_run("Author 1*, Author 2, Author 3\n")
     run_auth1.bold = True
     run_auth1.font.size = Pt(11)
-    run_auth2 = p_auth.add_run("Department of Computer Science & Information Systems, Payment Intelligence Division\nMetropolis Institute of Financial Engineering, Metropolis, Country\nEmail: {research.lead, ai.architect}@payment-intelligence.org")
+    run_auth2 = p_auth.add_run("Department of Computer Engineering, School of Electrical & Computer Engineering\nUniversity / Research Institution Name, City, Country\nEmail: {author1, author2, author3}@institution.edu (* Corresponding Author)")
     run_auth2.font.size = Pt(9.5)
     run_auth2.italic = True
 
@@ -136,17 +136,19 @@ def build_word_document():
     r_abs_label.bold = True
     r_abs_label.font.size = Pt(9)
     r_abs_text = p_abs.add_run(
-        "Modern payment service providers, card switches, and merchant acquirers capture high-throughput financial transaction logs round the clock. "
+        "Modern payment service providers, card switches, and merchant acquirers capture high-throughput financial transaction logs. "
         "Each raw financial record documents a masked payment card token, a monetary charge, a merchant terminal identifier, an event timestamp, "
-        "and a specialized commercial business guild. In production payment networks, global customer identifiers are absent, and single consumers "
-        "routinely disperse purchases across multiple payment instruments. Conventional banking intelligence relies on flat Recency, Frequency, "
-        "and Monetary aggregations, which suffer from severe topological blindness by obliterating higher-order co-visitation relationships and merchant guild affinities. "
-        "In this paper, we propose a novel Higher-Order Curvature-Attentive Neural Autoencoder (HG-CAN) framework that transforms raw payment streams into strategic "
-        "organizational intelligence without requiring customer identity supervision. The framework makes three primary contributions: "
-        "(1) a bipartite hypergraph formulation that models multi-card co-shopping episodes; (2) a geometric attention mechanism modulated by discrete Forman-Ricci "
-        "curvature to distinguish dense intra-guild community cores from cross-guild financial bridges; and (3) a self-supervised dual-manifold encoder that contracts "
-        "dispersed card tokens into coherent latent customer entities. Comprehensive empirical evaluations demonstrate that HG-CAN achieves an NMI of 0.8673 and an ARI "
-        "of 0.8848, vastly exceeding classical tabular heuristics and providing financial institutions with actionable blueprints for automated customer persona discovery."
+        "and a specialized commercial business guild. In payment networks, global customer identifiers are absent, and individual consumers "
+        "frequently divide purchases across multiple payment instruments. Conventional banking analytics rely on flat Recency, Frequency, "
+        "and Monetary (RFM) aggregations, which suffer from topological blindness by ignoring relational co-visitation patterns and merchant guild affinities. "
+        "In this paper, we investigate a Higher-Order Curvature-Attentive Neural Autoencoder (HG-CAN) architecture to extract latent cardholder representations "
+        "from transaction streams in an unsupervised manner. The framework models payment interactions as a bipartite graph of card-merchant interactions, "
+        "applies discrete Forman-Ricci curvature to modulate attention weights according to topological bottlenecks and dense clusters, "
+        "and optimizes an autoencoder to jointly preserve network topology and behavioral node attributes. "
+        "Empirical evaluations on a controlled synthetic benchmark (35,000 transactions across 1,480 cards, 350 merchant terminals, and 8 guilds) "
+        "demonstrate that HG-CAN achieves an NMI of 0.8673 and an ARI of 0.8848. While substantially outperforming classical tabular RFM heuristics, "
+        "HG-CAN exhibits clustering fidelity comparable to bipartite truncated SVD factorization, with the distinct operational advantages of non-linear "
+        "multi-modal feature integration, topological interpretability, and inductive representation learning on unseen nodes."
     )
     r_abs_text.font.size = Pt(9)
 
@@ -229,9 +231,9 @@ def build_word_document():
         "from routine micro-purchases; and (3) Multi-Card Dispersion: leaving cards disconnected rather than grouping them into latent consumer entities [4]."
     )
     add_para(
-        "To fundamentally resolve these limitations, this paper proposes an unprecedented geometric deep learning framework: the Higher-Order Curvature-Attentive "
-        "Neural Autoencoder (HG-CAN). By reformulating transactions as a hypergraph of card-merchant interactions and modulating multi-head graph attention through "
-        "discrete Forman-Ricci curvature, the framework autonomously discovers compact customer personas and computes actionable enterprise intelligence."
+        "To address these limitations, this paper investigates a geometric graph representation framework: the Higher-Order Curvature-Attentive "
+        "Neural Autoencoder (HG-CAN). By reformulating transactions as a bipartite graph of card-merchant interactions and modulating multi-head graph attention through "
+        "discrete Forman-Ricci curvature, the framework maps payment cards into a continuous latent space to identify behavioral customer personas in an unsupervised manner."
     )
 
     # ------------------- SECTION II (FORMAL PROBLEM FORMULATION) -------------------
@@ -293,8 +295,9 @@ def build_word_document():
 
     add_heading_2("C. Tier 3: Curvature-Attentive Graph Autoencoder (HG-CAN)")
     add_para(
-        "Tier 3 introduces the novel HG-CAN layer, which modulates multi-head attentional message passing using both edge affinity and discrete Ricci curvature: "
-        "alpha_ij^k = Softmax_j (LeakyReLU(a_k^T [W^k h_i || W^k h_j] + gamma_w * ln(w_ij) + gamma_c * tanh(F(i, j)))). "
+        "Tier 3 implements the HG-CAN layer, which modulates multi-head attentional message passing using both edge affinity and discrete Ricci curvature: "
+        "alpha_ij^k = Softmax_j (LeakyReLU(a_k^T [W^k h_i || W^k h_j] + beta_k * ln(1 + w_ij) + gamma_k * tanh(F(i, j)))), "
+        "where beta_k and gamma_k are learnable scalar parameters, and w_ij in [0, 1] is the non-negative cosine guild similarity, ensuring ln(1 + w_ij) >= 0 remains well-defined. "
         "The model is optimized self-supervised via a tripartite joint loss: L_total = L_link + lambda_1 * L_attr + lambda_2 * L_curv, "
         "which simultaneously enforces link reconstruction, attribute decoding, and geometric curvature alignment in the latent space."
     )
@@ -371,14 +374,18 @@ def build_word_document():
 
     add_column_figure(
         os.path.join(cfg.FIGURES_DIR, "fig5_benchmark_comparison_bar.png"),
-        "Fig. 5. Quantitative benchmark comparison demonstrating the massive alignment gains of the proposed HG-CAN architecture."
+        "Fig. 5. Quantitative benchmark comparison of customer clustering models across external ground-truth and internal geometric validation metrics."
     )
 
     add_para(
-        "As established in Table I and Fig. 5, the proposed HG-CAN architecture vastly surpasses the classical Tabular RFM model, "
-        "elevating Normalized Mutual Information (NMI) from 0.1746 to 0.8673 (nearly a 400% surge) and Adjusted Rand Index (ARI) from 0.0483 to 0.8848. "
-        "While Tabular RFM conflates customers based on superficial aggregate spending volume, HG-CAN captures the higher-order geometric manifold "
-        "and topological curvature of commercial spending, cleanly isolating high-value investment cardholders from routine shoppers."
+        "As reported in Table I and Fig. 5, relational models substantially outperform the classical Tabular RFM baseline. "
+        "Tabular RFM achieves an NMI of 0.1746 and an ARI of 0.0483, indicating that aggregate scalar volume alone fails to separate commercial behavior. "
+        "In contrast, both the linear Bipartite SVD baseline and the proposed HG-CAN architecture achieve high alignment with the ground-truth archetypes "
+        "(NMI of 0.8666 vs. 0.8673, and ARI of 0.8847 vs. 0.8848, respectively). "
+        "This similarity indicates that the card-guild interaction matrix provides the primary clustering signal in this dataset. "
+        "While truncated SVD yields higher Euclidean compactness (Silhouette of 0.286 vs. 0.192), the HG-CAN architecture provides distinct operational advantages: "
+        "it integrates 17-dimensional continuous behavioral statistics (including Shannon guild entropy and transaction skewness), supports inductive inference "
+        "on newly arriving payment cards without full matrix re-factorization, and offers topological interpretability through edge curvature."
     )
 
     # ------------------- SECTION V -------------------
@@ -483,10 +490,13 @@ def build_word_document():
     # ------------------- SECTION VI -------------------
     add_heading_1("VI. CONCLUSION")
     add_para(
-        "This paper established a novel geometric deep learning framework, HG-CAN, for customer discovery in the payment industry without requiring explicit "
-        "customer identification tags. By formulating transactions through higher-order hypergraphs and modulating attentional message passing via discrete "
-        "Forman-Ricci curvature, the framework resolves multi-card dispersion and topological blindness. Empirical benchmarks demonstrate outstanding improvements "
-        "(NMI of 0.8673 vs. 0.1746 for tabular RFM), delivering financial institutions an autonomous engine for strategic organizational intelligence."
+        "In this paper, we evaluated the Higher-Order Curvature-Attentive Neural Autoencoder (HG-CAN) for customer representation learning and persona discovery "
+        "in payment networks without requiring pre-authenticated customer tags. By modeling payment records through bipartite interaction graphs and guiding "
+        "attentional message passing via discrete Forman-Ricci curvature, the framework captures relational spending patterns that are lost in tabular aggregations. "
+        "Empirical results on a controlled synthetic benchmark show that HG-CAN significantly outperforms classical tabular RFM and achieves clustering fidelity "
+        "comparable to bipartite SVD factorization, while providing non-linear feature fusion and inductive flexibility. "
+        "A primary limitation of this study is its reliance on synthetic transaction data. Future work will focus on validating the architecture on large-scale "
+        "production switch streams and extending the framework to dynamic, continuous-time transaction graphs."
     )
 
     # ------------------- REFERENCES -------------------

@@ -1,14 +1,14 @@
 # From Transactional Data to Organizational Intelligence: A Graph-Based Architectural Framework for Customer Discovery in the Payment Industry
 
-**Authors:** Research Team & Financial Technology Laboratory  
-*Department of Computer Science & Information Systems, Payment Intelligence Division*  
-*Metropolis Institute of Financial Engineering, Metropolis, Country*  
-*Email: {research.lead, ai.architect}@payment-intelligence.org*
+**Authors:** Author 1*, Author 2, Author 3  
+*Department of Computer Engineering, School of Electrical & Computer Engineering*  
+*University / Research Institution Name, City, Country*  
+*Email: {author1, author2, author3}@institution.edu (* Corresponding Author)*
 
 ---
 
 ### Abstract
-*Payment service providers, card switches, and acquiring banks ingest massive multi-channel financial streams across point-of-sale terminals and online payment gateways daily. Modern banking intelligence predominantly relies on flat tabular Recency, Frequency, and Monetary (RFM) heuristics that suffer from fundamental structural blindness, discarding non-Euclidean co-spending manifolds and multi-hop trade relationships among payment cards, acquiring merchant terminals, and commercial business categories. In this paper, we propose a novel, end-to-end geometric deep learning architecture: the Higher-Order Curvature-Attentive Neural Autoencoder (HG-CAN) for transforming continuous payment streams into strategic organizational intelligence and autonomous persona discovery. Our framework first formalizes transactional flows as a bipartite card-merchant hypergraph and computes discrete Forman-Ricci curvature over the projected topology, directly exposing liquidity bottlenecks and dense commercial trading clusters. Multi-head graph attention mechanisms are then modulated by discrete curvature scores and merchant guild affinities, learning compact card representations under a tripartite self-supervised objective (topological link reconstruction, guild attribute decoding, and curvature contrastive alignment). Extensive empirical evaluation on a realistic multi-agent payment stream comprising 35,000 transactions, 1,480 active payment cards, 350 merchant terminals, and 8 commercial guilds demonstrates that HG-CAN achieves a Normalized Mutual Information (NMI) of 0.8673 and an Adjusted Rand Index (ARI) of 0.8848—surpassing classical tabular RFM heuristics by +396.7% and +1731.6% respectively, while yielding five distinct, strategically actionable enterprise personas.*
+*Payment service providers, card switches, and acquiring banks ingest massive multi-channel financial streams across point-of-sale terminals and payment gateways daily. Modern banking intelligence predominantly relies on flat tabular Recency, Frequency, and Monetary (RFM) heuristics that suffer from topological blindness, discarding non-Euclidean co-spending manifolds and multi-hop trade relationships among payment cards, acquiring merchant terminals, and commercial business guilds. In this paper, we investigate an end-to-end geometric deep learning architecture: the Higher-Order Curvature-Attentive Neural Autoencoder (HG-CAN) for transforming payment streams into organizational intelligence and customer persona discovery. Our framework first formalizes transactional flows as a bipartite card-merchant interaction graph and computes discrete Forman-Ricci curvature over the projected topology, identifying liquidity bottlenecks and dense commercial trading clusters. Multi-head graph attention mechanisms are then modulated by discrete curvature scores and merchant guild affinities, learning compact card representations under a tripartite self-supervised objective (topological link reconstruction, guild attribute decoding, and curvature alignment). Extensive empirical evaluation on a controlled synthetic payment stream comprising 35,000 transactions, 1,480 active payment cards, 350 merchant terminals, and 8 commercial guilds demonstrates that HG-CAN achieves a Normalized Mutual Information (NMI) of 0.8673 and an Adjusted Rand Index (ARI) of 0.8848. While substantially outperforming classical tabular RFM heuristics, HG-CAN achieves clustering fidelity comparable to linear bipartite SVD factorization, with the distinct operational advantages of non-linear multi-modal feature integration, topological interpretability, and inductive representation learning on unseen payment cards.*
 
 **Keywords:** Payment Systems, Graph Neural Networks, Customer Discovery, Forman-Ricci Curvature, Hypergraph Neural Networks, Bipartite Graphs, Organizational Intelligence, Financial Technology (Fintech).
 
@@ -18,18 +18,18 @@
 
 Commercial card payment networks and interbank clearing switches process hundreds of millions of retail and commercial transactions daily. At the transaction settlement layer, each payment record encapsulates essential dimensions of economic behavior: the cardholder payment instrument, transaction monetary volume, acquiring merchant terminal identifier, precise timestamp of occurrence, and merchant commercial guild classification (e.g., gold and jewelry stores, supermarkets, industrial steel and construction materials, travel agencies, medical clinics).
 
-Despite this unprecedented analytical wealth, commercial financial institutions predominantly operate under the "Data Rich, Intelligence Poor" paradox. Conventional banking intelligence systems rely almost universally upon tabular Recency, Frequency, and Monetary (RFM) aggregations. Tabular models compress multi-dimensional spending behavior into scalar values, suffering from three fatal architectural limitations:
+Despite this analytical wealth, commercial financial institutions frequently confront the "Data Rich, Intelligence Poor" paradox. Conventional banking intelligence systems rely almost universally upon tabular Recency, Frequency, and Monetary (RFM) aggregations. Tabular models compress multi-dimensional spending behavior into scalar values, suffering from three structural limitations:
 1. **Topological Blindness:** Tabular models assume independent observations, failing to capture complex relational networks and multi-hop co-spending patterns across merchant terminals.
-2. **Guild Semantic Compression:** Flat scalar summation erases qualitative distinctions between heavy capital investments (e.g., gold bullion or wholesale industrial supplies) and repeated everyday micro-expenses of equal monetary sum.
-3. **Information Bottlenecks:** Standard graph neural networks experience over-squashing and bottleneck phenomena when applied to payment interaction graphs.
+2. **Guild Semantic Compression:** Flat scalar summation erases qualitative distinctions between capital investments (e.g., gold bullion or wholesale industrial supplies) and repeated everyday micro-expenses of equal monetary sum.
+3. **Information Bottlenecks:** Standard graph neural networks experience over-squashing and bottleneck phenomena when applied to dense payment interaction graphs.
 
-To resolve these challenges, this paper introduces a novel, scientifically grounded architecture based on discrete Riemannian geometry: the **Higher-Order Curvature-Attentive Neural Autoencoder (HG-CAN)**. By integrating discrete **Forman-Ricci Curvature** $\mathbf{F}(u, v)$ on hypergraph-projected payment networks, the attention mechanism dynamically modulates information propagation between bridging liquidity corridors and dense intra-cluster spending cliques.
+To address these challenges, this paper investigates a framework based on discrete Riemannian geometry: the **Higher-Order Curvature-Attentive Neural Autoencoder (HG-CAN)**. By integrating discrete **Forman-Ricci Curvature** $\mathbf{F}(u, v)$ on hypergraph-projected payment networks, the attention mechanism dynamically modulates information propagation between bridging liquidity corridors and dense intra-cluster spending cliques.
 
 The primary contributions of this paper are:
 - An end-to-end, four-tier architecture spanning raw payment transaction logs to enterprise persona discovery and banking intelligence KPIs.
-- The novel HG-CAN model, which introduces discrete Forman-Ricci curvature directly into the attention scoring mechanism of graph neural autoencoders.
-- A tripartite self-supervised training objective combining topological link reconstruction, guild attribute decoding, and curvature contrastive alignment.
-- Rigorous empirical evaluation demonstrating state-of-the-art clustering alignment (NMI: 0.8673, ARI: 0.8848) against classical RFM and SVD baselines.
+- The HG-CAN model, which integrates discrete Forman-Ricci curvature directly into the attention scoring mechanism of graph neural autoencoders.
+- A tripartite self-supervised training objective combining topological link reconstruction, guild attribute decoding, and curvature alignment.
+- Rigorous empirical evaluation demonstrating state-of-the-art clustering alignment (NMI: 0.8673, ARI: 0.8848) against classical RFM and SVD baselines on a controlled synthetic benchmark.
 
 ---
 
@@ -97,7 +97,7 @@ Maps learned latent embeddings $\mathbf{z}_u$ into five enterprise-grade persona
 | **Proposed Framework (HG-CAN)** | **0.8673** | **0.8848** | **0.8673** | 0.1919 | 1.9058 | 169.4 |
 
 ![Figure 5: Benchmark Bar Chart](figures/fig5_benchmark_comparison_bar.png)
-*Fig. 2. Quantitative benchmark comparison demonstrating the massive alignment gains of the proposed HG-CAN framework over classical tabular RFM.*
+*Fig. 2. Quantitative benchmark comparison of customer clustering models across external ground-truth (NMI, ARI) and internal geometric clustering metrics.*
 
 ---
 
@@ -121,4 +121,4 @@ Maps learned latent embeddings $\mathbf{z}_u$ into five enterprise-grade persona
 
 ## VI. CONCLUSION
 
-This paper presented the HG-CAN framework for discovering organizational customer personas from transactional payment data `[pan, amount, merchant_id, create_date, cast_name]`. By integrating discrete Forman-Ricci curvature with multi-head graph attention autoencoders, the system overcomes the structural blindness of classical banking analytics and the information bottlenecks of standard GNNs. Achieving an NMI of 0.8673 and ARI of 0.8848, the architecture provides financial institutions with an actionable blueprint for enterprise customer discovery.
+In this paper, we evaluated the Higher-Order Curvature-Attentive Neural Autoencoder (HG-CAN) for customer representation learning and persona discovery in payment networks without requiring pre-authenticated customer tags. By modeling payment records through bipartite interaction graphs and guiding attentional message passing via discrete Forman-Ricci curvature, the framework captures relational spending patterns that are lost in tabular aggregations. Empirical results on a controlled synthetic benchmark show that HG-CAN significantly outperforms classical tabular RFM and achieves clustering fidelity comparable to bipartite SVD factorization, while providing non-linear feature fusion and inductive flexibility. A primary limitation of this study is its reliance on synthetic transaction data. Future work will focus on validating the architecture on large-scale production switch streams and extending the framework to dynamic, continuous-time transaction graphs.
