@@ -1,0 +1,8 @@
+Architecture Variant,NDCG@35,Precision@35,Recall@35,MAP@35,NDCG_disp,Prec_disp,Delta_NDCG,Significance
+Full Proposed HAMTA (M-GATO),0.382,0.366,0.246 ± 0.081,0.180 ± 0.092,0.382 ± 0.116,0.366 ± 0.120,0.0,Ref (Ours)
+w/o Forman-Ricci Curvature Modulation,0.384,0.369,0.248 ± 0.081,0.181 ± 0.093,0.384 ± 0.117,0.369 ± 0.120,-0.002,p=0.8457 (t=0.6892)
+w/o Graph Support Weighting (Q = 1),0.396,0.374,0.252 ± 0.079,0.184 ± 0.083,0.396 ± 0.102,0.374 ± 0.117,-0.014,p=0.3750 (t=0.3484)
+w/o Uncertainty Bounds (Point Forecast Gap),0.415,0.397,0.267 ± 0.064,0.203 ± 0.079,0.415 ± 0.095,0.397 ± 0.096,-0.033,p=0.0273 (t=0.0368)
+w/o Graph-Weighted Peer Benchmark (Guild Mean),0.394,0.354,0.238 ± 0.060,0.182 ± 0.081,0.394 ± 0.096,0.354 ± 0.089,-0.012,p=0.6953 (t=0.5897)
+w/o Temporal Dynamic Modeling (Static GNN),0.31,0.286,0.192 ± 0.048,0.124 ± 0.055,0.310 ± 0.079,0.286 ± 0.071,0.072,p=0.0840 (t=0.0607)
+w/o Graph Structure (Tabular GBDT Only),0.237,0.214,0.144 ± 0.043,0.082 ± 0.049,0.237 ± 0.083,0.214 ± 0.064,0.145,p=0.0020 (t=0.0002)

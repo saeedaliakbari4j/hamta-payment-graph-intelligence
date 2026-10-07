@@ -1,0 +1,53 @@
+--- Statistical Significance Tests (Paired t-test and Wilcoxon against HAMTA) ---
+=== Budget @10 ===
+Lowest Volume Heuristic (Test) vs HAMTA:
+  Precision@10: diff=0.190, t-test p=0.0012, wilcoxon p=0.0039
+  NDCG@10: diff=0.192, t-test p=0.0121, wilcoxon p=0.0137
+Tabular Point Gap (GBDT) vs HAMTA:
+  Precision@10: diff=0.130, t-test p=0.0063, wilcoxon p=0.0098
+  NDCG@10: diff=0.124, t-test p=0.0231, wilcoxon p=0.0371
+Static GNN Gap vs HAMTA:
+  Precision@10: diff=0.030, t-test p=0.4961, wilcoxon p=0.5547
+  NDCG@10: diff=0.034, t-test p=0.5685, wilcoxon p=0.6250
+SFA-Style Frontier Gap vs HAMTA:
+  Precision@10: diff=-0.030, t-test p=0.4679, wilcoxon p=0.4375
+  NDCG@10: diff=-0.043, t-test p=0.3731, wilcoxon p=0.3223
+=== Budget @20 ===
+Lowest Volume Heuristic (Test) vs HAMTA:
+  Precision@20: diff=0.210, t-test p=0.0010, wilcoxon p=0.0039
+  NDCG@20: diff=0.207, t-test p=0.0009, wilcoxon p=0.0020
+Tabular Point Gap (GBDT) vs HAMTA:
+  Precision@20: diff=0.145, t-test p=0.0010, wilcoxon p=0.0059
+  NDCG@20: diff=0.139, t-test p=0.0015, wilcoxon p=0.0059
+Static GNN Gap vs HAMTA:
+  Precision@20: diff=0.075, t-test p=0.0569, wilcoxon p=0.0684
+  NDCG@20: diff=0.065, t-test p=0.1218, wilcoxon p=0.1309
+SFA-Style Frontier Gap vs HAMTA:
+  Precision@20: diff=0.065, t-test p=0.0277, wilcoxon p=0.0391
+  NDCG@20: diff=0.029, t-test p=0.3156, wilcoxon p=0.3750
+=== Budget @35 ===
+Lowest Volume Heuristic (Test) vs HAMTA:
+  Precision@35: diff=0.169, t-test p=0.0022, wilcoxon p=0.0059
+  NDCG@35: diff=0.179, t-test p=0.0008, wilcoxon p=0.0020
+Tabular Point Gap (GBDT) vs HAMTA:
+  Precision@35: diff=0.151, t-test p=0.0000, wilcoxon p=0.0020
+  NDCG@35: diff=0.145, t-test p=0.0002, wilcoxon p=0.0020
+Static GNN Gap vs HAMTA:
+  Precision@35: diff=0.080, t-test p=0.0271, wilcoxon p=0.0488
+  NDCG@35: diff=0.072, t-test p=0.0607, wilcoxon p=0.0840
+SFA-Style Frontier Gap vs HAMTA:
+  Precision@35: diff=0.009, t-test p=0.7452, wilcoxon p=1.0000
+  NDCG@35: diff=-0.000, t-test p=0.9853, wilcoxon p=0.8457
+=== Budget @50 ===
+Lowest Volume Heuristic (Test) vs HAMTA:
+  Precision@50: diff=0.148, t-test p=0.0003, wilcoxon p=0.0020
+  NDCG@50: diff=0.162, t-test p=0.0001, wilcoxon p=0.0020
+Tabular Point Gap (GBDT) vs HAMTA:
+  Precision@50: diff=0.152, t-test p=0.0000, wilcoxon p=0.0020
+  NDCG@50: diff=0.147, t-test p=0.0000, wilcoxon p=0.0020
+Static GNN Gap vs HAMTA:
+  Precision@50: diff=0.052, t-test p=0.0188, wilcoxon p=0.0293
+  NDCG@50: diff=0.053, t-test p=0.0510, wilcoxon p=0.0840
+SFA-Style Frontier Gap vs HAMTA:
+  Precision@50: diff=0.018, t-test p=0.4129, wilcoxon p=0.6094
+  NDCG@50: diff=0.008, t-test p=0.7010, wilcoxon p=0.7695

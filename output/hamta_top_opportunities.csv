@@ -1,0 +1,6 @@
+﻿merchant_id,guild,current_tx,forecast_tx,upper_bound,peer_benchmark,graph_support,mgato_score,synthetic_label,guild_en,guild_fa_short
+MERCH_00273,پوشاک و کیف و کفش,9,5.3,9.3,24.4,0.94,0.583,0,Apparel,پوشاک
+MERCH_00265,پوشاک و کیف و کفش,14,9.1,13.1,31.3,1.0,0.581,1,Apparel,پوشاک
+MERCH_00054,پوشاک و کیف و کفش,19,9.1,13.1,30.5,0.99,0.567,0,Apparel,پوشاک
+MERCH_00337,پوشاک و کیف و کفش,13,8.3,12.3,27.4,0.99,0.545,0,Apparel,پوشاک
+MERCH_00249,آهن‌آلات و مصالح صنعتی,13,12.3,16.3,34.6,1.0,0.529,1,Industrial Wholesale,صنعتی

@@ -1,0 +1,4 @@
+Scale,Merchants (|M|),Transactions (|E|),Cards (|C|),Wall-Clock Time (s),Peak Memory (MB),Throughput (tx/s)
+Small,100,"10,000",500,1.54,4.83,6504.7
+Medium (Default),350,"35,000","1,500",6.28,16.85,5569.9
+Large,1000,"100,000","4,000",28.17,113.33,3550.2

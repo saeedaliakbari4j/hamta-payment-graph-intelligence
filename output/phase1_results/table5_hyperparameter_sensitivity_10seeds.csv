@@ -1,0 +1,26 @@
+Parameter,Value,NDCG@35,Mean
+Peer Neighborhood K,3,0.367 ± 0.130,0.3674144986505715
+Peer Neighborhood K,5,0.353 ± 0.107,0.3528483610184975
+Peer Neighborhood K,6,0.382 ± 0.116,0.3820329364702137
+Peer Neighborhood K,8,0.393 ± 0.100,0.39304080907275785
+Peer Neighborhood K,10,0.397 ± 0.088,0.3969060386260826
+Similarity Trade-off Lambda,0.4,0.390 ± 0.111,0.38965419541333296
+Similarity Trade-off Lambda,0.5,0.386 ± 0.114,0.3859471324907437
+Similarity Trade-off Lambda,0.65,0.382 ± 0.116,0.3820329364702137
+Similarity Trade-off Lambda,0.8,0.383 ± 0.114,0.3832566108273182
+Similarity Trade-off Lambda,0.9,0.389 ± 0.119,0.3891662053810004
+Curvature Weight Eta,0.0,0.384 ± 0.117,0.3836188739402242
+Curvature Weight Eta,0.15,0.385 ± 0.115,0.3845245447330422
+Curvature Weight Eta,0.25,0.382 ± 0.116,0.3820329364702137
+Curvature Weight Eta,0.35,0.391 ± 0.113,0.39075442039604835
+Curvature Weight Eta,0.5,0.409 ± 0.115,0.4094449110447049
+Support Saturation Kappa,10.0,0.393 ± 0.104,0.3925059471306346
+Support Saturation Kappa,15.0,0.392 ± 0.112,0.39198413614499894
+Support Saturation Kappa,18.0,0.382 ± 0.116,0.3820329364702137
+Support Saturation Kappa,25.0,0.388 ± 0.121,0.3880343138999753
+Support Saturation Kappa,30.0,0.397 ± 0.122,0.3967443356329511
+Conformal Quantile q,0.75,0.411 ± 0.103,0.41110787596640225
+Conformal Quantile q,0.8,0.403 ± 0.113,0.4027054727871394
+Conformal Quantile q,0.85,0.382 ± 0.116,0.3820329364702137
+Conformal Quantile q,0.9,0.385 ± 0.121,0.38531008360462293
+Conformal Quantile q,0.95,0.384 ± 0.111,0.38405247766428674

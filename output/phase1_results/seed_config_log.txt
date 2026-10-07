@@ -1,0 +1,22 @@
+# HAMTA Phase 1 Audit Execution Log
+Date: 2026-10-06 12:36:26
+Random Seeds: [42, 101, 202, 303, 404, 505, 606, 707, 808, 909]
+Simulation Horizon: 90 days (6 periods of 15 days each)
+Merchants: 350
+Cards: 1500
+Transactions: 35000
+
+Hyperparameters:
+- Peer similarity trade-off (lambda): 0.65
+- Peer neighborhood size (K): 6
+- Discrete Forman-Ricci curvature weight (eta): 0.25
+- Graph support saturation scale (kappa): 18.0
+- Conformal prediction interval coverage (1 - alpha): 0.85
+
+Audit Verification Status:
+- Root cause of MAE=1.00: CONFIRMED (Old code leaked target actual_t5 into y_pred_hamta).
+- Fixed Forecasting Setup: Leak-free rolling temporal validation (Train 0-3, Cal 4, Test 5).
+- Discrete NB NLL: Mathematically non-negative discrete PMF evaluated via gammaln formula.
+- Standard MAP@K: Normalized by min(K, total_positives), resolving artificial MAP=1.000 artifact.
+- Scenarios evaluated: Negative Control (drop=0.0, noise=2.0), A (drop=0.18, noise=3.0), B (drop=0.32, noise=1.8), C (drop=0.48, noise=0.9).
+- Total Seeds Evaluated: 10 seeds.
