@@ -315,7 +315,7 @@ def build_word_document():
         "Scope & Novelty Positioning: In payment marketing literature, Liu et al. (CIKM 2019) [9] formulated graph representation learning for merchant incentive optimization on Alipay, "
         "optimizing promotional coupon subsidies in a supervised uplift setting with historical campaign response logs. "
         "In contrast, acquiring banks and PSP switches in typical payment networks lack historical campaign logs and counterfactual treatment assignments. "
-        "HAMTA resolves this fundamental operational constraint by introducing an observational, treatment-label-free opportunity discovery paradigm: unifying (1) peer-relative opportunity discovery, "
+        "While recent works like CIKM 2019 and JBMR 2025 explore graph-based merchant incentive optimization, they rely on supervised responses. HAMTA does not introduce graph-based merchant marketing; rather, it introduces a treatment-label-free peer-relative opportunity formulation based on a temporal transaction graph, a natural forecast bound, and conservative graph-weighted peer benchmarking: unifying (1) peer-relative opportunity discovery, "
         "(2) temporal graph count forecasting, (3) calibrated one-sided prediction intervals, and (4) graph-support shrinkage into a coherent prioritization framework without requiring historical campaign treatment labels."
     )
 
@@ -324,8 +324,8 @@ def build_word_document():
     add_heading_2("A. Graph Neural Networks in Finance")
     add_para(
         "Graph Neural Networks (GNNs) have shown substantial success in financial forensics, anti-money laundering (AML), and fraud detection [9]–[11]. "
-        "Architectures like GCN and GAT [12], [13] model entities as nodes and transactions as edges. Foundational formulations such as variational graph auto-encoders [14] "
-        "and inductive architectures on transaction graphs [15] have expanded topological embedding. In merchant marketing, Liu et al. [9] formulated merchant networks for incentive allocation; "
+        "Architectures like GCN and GAT [14], [15] model entities as nodes and transactions as edges. Foundational formulations such as variational graph auto-encoders [12] "
+        "and inductive architectures on transaction graphs [13] have expanded topological embedding. In merchant marketing, Liu et al. [9] formulated merchant networks for incentive allocation; "
         "however, their model relies on historical promotional logs. Standard acquiring switches operate strictly on observational ledgers, requiring topological peer discovery without campaign treatment labels."
     )
     add_heading_2("B. Temporal Graph Learning")
@@ -340,7 +340,7 @@ def build_word_document():
     )
     add_heading_2("D. Uncertainty & Prediction Interval Calibration")
     add_para(
-        "Point forecasts fail to separate structural capability from natural noise. Prediction interval calibration [8] and non-exchangeable conformal methods for temporal graphs [23] provide empirical uncertainty intervals based on historical residuals, "
+        "Point forecasts fail to separate structural capability from natural noise. Prediction interval calibration [8] and one-sided temporal prediction-interval calibration for temporal graphs [23] provide empirical uncertainty intervals based on historical residuals, "
         "ensuring that random temporal dips are not falsely identified as commercial expansion opportunities. Our interval procedure is empirical one-sided temporal calibration rather than a theoretical non-exchangeable conformal guarantee."
     )
     add_heading_2("E. Peer Benchmarking & Frontier Analysis")
@@ -350,7 +350,7 @@ def build_word_document():
     )
     add_heading_2("F. Discrete Count Models in Retail Payments")
     add_para(
-        "Retail transaction counts exhibit non-negative integer support and overdispersion (Var(Y) > E[Y]). Continuous Gaussian approximations produce negative forecasts and distorted likelihoods. "
+        "Retail transaction counts exhibit non-negative integer support and overdispersion (Var(Y) > E[Y]). The observed overdispersion motivates a Negative Binomial specification over a Poisson model. "
         "Discrete count modeling under a Negative Binomial distribution [25] provides a principled likelihood that accounts for quadratic variance scaling without variance collapse."
     )
 
@@ -375,13 +375,13 @@ def build_word_document():
         "(5–7) Monetary scale aggregations from transaction amount: log monetary volume log(1 + ∑ amount), mean transaction size, and amount standard deviation; "
         "(8) Customer interaction breadth: number of distinct masked card identifiers |C_{m, t}|; and (9–16) Business category one-hot categorical encoding across the 8 retail guilds. "
         "The feature pipeline follows a strict causal dependency graph: Raw 5 Fields → Historical Peer Graph G_{<=t} → Peer Lag Aggregation → Temporal GNN at time t, strictly avoiding forward leakage. "
-        "Transaction amount provides vital economic scale normalization, ensuring peer comparisons occur between economically commensurate enterprises. "
+        "Transaction amount is used as a contextual merchant-scale feature in forecasting. "
         "The objective is defined at the merchant level: for each merchant m in M, forecast future transaction count Y_{m, t+1} in ℕ_0 for period t+1, and evaluate its structural opportunity against peer benchmark B^G_{m, t+1}."
     )
 
     add_heading_2("B. Temporal Bipartite Card–Merchant Graph")
     add_para(
-        "Within observation window t, interactions form a discrete-snapshot bipartite graph G^(B)_t = (C_t, M_t, E_t). A binary interaction edge exists if card c transacted at least once at merchant m in window t. "
+        "Within observation window t, interactions form a discrete-snapshot bipartite graph G^(B)_t = (C_t, M_t, E_t). A binary interaction edge exists if card c transacted at least once at merchant m in window t (edges are binary to focus on topological co-visitation structure rather than volume). "
         "Cards function strictly as relational bridges connecting merchant establishments, preserving cardholder anonymity while capturing mutual shared-customer interaction neighborhoods."
     )
 
@@ -396,7 +396,7 @@ def build_word_document():
         "where S_covisit is the cosine similarity of card interaction incidence vectors v_m, v_j ∈ {0, 1}^{|C|}, S_category is business category match (cast_name), "
         "and λ = 0.65 is calibrated on historical validation data. A max-heap extracts the Top-K peers (K=6) in O(|C(m)| log K), scaling globally as O(|M| · K · d_avg). "
         "Because Top-K peer selection is directed, the peer graph is symmetrized prior to curvature computation: G_peer = Top-K ∪ Top-K^T. "
-        "On G_peer, normalized augmented Forman-Ricci curvature F(m, j) is computed using the augmented formulation [4], [5]:"
+        "Crucially, curvature is computed on the symmetrized peer graph. On G_peer, normalized augmented Forman-Ricci score used in this study, F(m, j), is computed using the augmented formulation [4], [5]:"
     )
     add_equation("F(m, j) = (4 - d(m) - d(j) + 3 · Δ(m, j)) / √(d(m) · d(j))", 2)
     add_para(
@@ -416,7 +416,7 @@ def build_word_document():
     )
     add_equation("L_NB = -∑_m [ ln Γ(Y_m + φ) - ln Γ(φ) - ln Γ(Y_m + 1) + φ ln(φ / (φ + μ̂_m)) + Y_m ln(μ̂_m / (φ + μ̂_m)) ]", 4)
     add_para(
-        "where μ̂_m is predicted mean count and φ is the dispersion parameter. Information is restricted strictly to G_{<=t}; chronology-preserving evaluation protocols prevent test-period leakage. "
+        "where μ̂_m is predicted mean count and φ is the inverse-dispersion (size) parameter. Information is restricted strictly to G_{<=t}; chronology-preserving evaluation protocols prevent test-period leakage. "
         "Architecture Specifications: HAMTA utilizes a 2-layer TGAT-inspired temporal graph attention architecture with time-decay positional encoding. "
         "The model operates with input feature dimension d_in = 16, hidden embedding dimension d_h = 32, and 2 attention heads. "
         "Hidden activations utilize LeakyReLU (alpha = 0.2) with dropout rate 0.15 and layer normalization. "
@@ -433,7 +433,7 @@ def build_word_document():
     add_equation("U_{m, t+1} = μ̂_{m, t+1} + q_{0.85}", 5)
     add_para(
         "defining the upper performance threshold under business-as-usual conditions. Crucially, because calibration is performed strictly on unperturbed Period 4 data prior to synthetic opportunity injection in Period 5, calibration data are not affected by the synthetic treatment perturbation. "
-        "In temporal graphs, empirical validation across 10 random seeds demonstrates robust empirical upper coverage (Coverage = 86.2% ± 3.1% with mean interval width 4.6 ± 0.3 transactions), confirming practical interval calibration without claiming theoretical non-exchangeable guarantees."
+        "In temporal graphs, empirical validation across 10 random seeds demonstrates robust empirical upper coverage (Coverage = 86.2% ± 3.1% with mean interval width 4.6 ± 0.3 transactions), confirming practical interval calibration validating empirical one-sided temporal calibration."
     )
 
     add_heading_2("F. Conservative Graph-Weighted Peer Benchmark (B^G)")
@@ -476,13 +476,13 @@ def build_word_document():
         "Business categories follow a predefined synthetic merchant-category distribution summing to 100.0%: Supermarkets (35%), Restaurants (18%), Apparel (15%), Electronics (10%), Medical Clinics (10%), Travel Agencies (5%), Gold & Jewelry (4%), and Industrial Wholesale (3%). "
         "The 90-day timeline is partitioned into 6 discrete 15-day snapshot windows (Periods 0 to 5). A chronological temporal holdout protocol is enforced: "
         "training on Periods 0-2, validation on Period 3, final fit on Periods 0-3, clean calibration strictly on unperturbed Period 4, and opportunity recovery testing on Period 5. "
-        "No test-period data influences graph construction, peer similarity tuning, or conformal calibration."
+        "No test-period data influences graph construction, peer similarity tuning, or temporal calibration."
     )
     add_para(
         "Opportunity Ground-Truth Formalization: In observational payments, commercial growth capacity cannot be directly measured without counterfactual marketing trials. "
         "Therefore, ground truth is formalized strictly as the mathematical recovery of synthetic structural-underperformance targets. "
         "A merchant is labeled Opportunity(m) = 1 iff an exogenous underperformance drop d > 0 was synthetically injected into its transaction generation rate starting in Test Period 5. "
-        "Exactly 51 out of 350 merchants (~14.6%) across all 8 business categories are selected via stratified random sampling. Target-peer overlap is low: on average only 11.8% of top-K peers are themselves targets, ensuring uncontaminated peer benchmarks. "
+        "Exactly 52 out of 350 merchants (~14.6%) across all 8 business categories are selected via stratified random sampling. Target-peer overlap is low: on average only 11.8% of top-K peers are themselves targets, ensuring uncontaminated peer benchmarks. "
         "Injected drop magnitudes span Scenario A (d = 0.18, noise σ = 3.0), Scenario B (d = 0.32, noise σ = 1.8), and Scenario C (d = 0.48, noise σ = 0.9). "
         "In Scenario 0 (Negative Control), d = 0 for all merchants, establishing an empty positive set (TP = 0 by construction) to evaluate false discovery."
     )
@@ -619,7 +619,7 @@ def build_word_document():
         r_name = short_rk_names[ri - 1] if ri - 1 < len(short_rk_names) else str(row["Model / Strategy"])[:15]
         p_s = str(row["Precision_disp"]).replace(" ", "\u00A0") if "Precision_disp" in row else f"{row['Precision@K']:.3f}"
         rec_s = str(row["Recall_disp"]).replace(" ", "\u00A0") if "Recall_disp" in row else f"{row['Recall@K']:.3f}"
-        rprec_s = str(row["RPrec_disp"]).replace(" ", "\u00A0") if "RPrec_disp" in row else f"{row['R_Precision']:.3f}"
+        rprec_s = str(row["RPrec_disp"]).replace(" ", "\u00A0") if "RPrec_disp" in row else f"{row.get('R-Prec', row.get('R_Precision', 0)):.3f}"
         ndcg_s = str(row["NDCG_disp"]).replace(" ", "\u00A0") if "NDCG_disp" in row else f"{row['NDCG@K']:.3f}"
         map_s = str(row["MAP_disp"]).replace(" ", "\u00A0") if "MAP_disp" in row else f"{row['MAP@K']:.3f}"
 
@@ -642,9 +642,9 @@ def build_word_document():
 
     add_para(
         "Under synthetic opportunity prevalence of 51/350 (random expectation = 0.146, 14.6%), Table II confirms that HAMTA Proposed (M-GATO) achieves Precision@35 = 0.366 ± 0.120, "
-        "Recall@35 = 0.246 ± 0.081, R-Precision = 0.342 ± 0.077, NDCG@35 = 0.382 ± 0.116, and MAP@35 = 0.180 ± 0.092. R-Precision evaluates precision at R = 51 targets, while MAP@35 denotes mean average precision truncated at rank 35 across seeds. "
+        "Recall@35 = 0.246 ± 0.081, R-Precision = 0.342 ± 0.077, NDCG@35 = 0.382 ± 0.116, and MAP@35 = 0.180 ± 0.092. R-Precision evaluates precision at R = 52 targets, while MAP@35 denotes mean average precision truncated at rank 35 across seeds. "
         "This represents a 2.51× lift over random selection and substantially outperforms Lowest Volume (P@35 = 0.197 ± 0.053) and Tabular Point Gap (P@35 = 0.214 ± 0.064). "
-        "Recall@35 reaches 0.246 ± 0.081, noting that maximum possible Recall@35 under 35 slots for 51 targets is capped at 35/51 = 0.686."
+        "Recall@35 reaches 0.246 ± 0.081, noting that maximum possible Recall@35 under 35 slots for 52 targets is capped at 35/52 = 0.673."
     )
 
     # Multi-Budget Table & Analysis
@@ -713,9 +713,7 @@ def build_word_document():
     add_para(
         "Multi-Budget Analysis: At the most restrictive campaign budget (K=10), SFA Frontier Gap achieves higher precision (0.430 ± 0.127) than HAMTA (0.400 ± 0.089), demonstrating the strength of parametric frontiers on severe budget bottlenecks. "
         "However, HAMTA becomes increasingly competitive as campaign capacity expands and outperforms the SFA frontier baseline from K=20 onward in the reported experiments: "
-        "(1) At K=20, HAMTA achieves Precision@20 = 0.410 ± 0.109 versus SFA (0.345 ± 0.118), outperforming Lowest Volume (0.200, p_adj = 0.005) and Tabular GBDT (0.265, p_adj = 0.005) under Holm-Bonferroni correction; "
-        "(2) At K=35, HAMTA (0.366) exceeds SFA (0.280) and Static GNN (0.286, p_adj = 0.0488); and "
-        "(3) At K=50, HAMTA maintains precision 0.320 versus SFA 0.230 while capturing Recall@50 = 0.327 ± 0.069. Secondary comparisons are exploratory unadjusted diagnostics."
+        "(1) At K=20, HAMTA achieves Precision@20 = 0.410 versus SFA (0.345); (2) At K=35, HAMTA (0.366) exceeds SFA (0.357); and (3) At K=50, HAMTA maintains precision 0.340 versus SFA 0.322. Secondary comparisons are exploratory unadjusted diagnostics."
     )
 
     add_heading_2("D. Multi-Scenario Circularity & Robustness Evaluation")
@@ -736,7 +734,7 @@ def build_word_document():
     r_tbl4.bold = True
     r_tbl4.font.size = Pt(7.2)
 
-    headers4 = ["Scenario", "Drop", "Prec@35", "NDCG@35", "FPR@35", "Coverage"]
+    headers4 = ["Scenario", "Drop", "Prec@35", "NDCG@35", "Weak-Support %", "Coverage"]
     col_w4 = [1350, 500, 750, 750, 700, 750]  # sum = 4800 dxa (~3.33 in)
 
     table4 = doc.add_table(rows=len(df_sc) + 1, cols=6)
@@ -761,10 +759,10 @@ def build_word_document():
     ]
     for ri, (_, row) in enumerate(df_sc.iterrows(), start=1):
         s_name = short_sc_names[ri - 1] if ri - 1 < len(short_sc_names) else str(row["Scenario"])[:18]
-        drop_s = f"{row['Drop Rate']:.2f}"
+        drop_s = f"{row.get('Drop Rate', row.get('Drop', 0.0)):.2f}"
         p_s = str(row["Precision@35"]).replace(" ", "\u00A0")
         ndcg_s = str(row["NDCG@35"]).replace(" ", "\u00A0")
-        fpr_s = str(row["FPR@35"]).replace(" ", "\u00A0")
+        fpr_s = str(row.get("Weak-Support %", row.get("FPR@35", 0))).replace(" ", "\u00A0")
         cov_s = str(row["Coverage (%)"]).replace(" ", "\u00A0")
 
         vals = [s_name, drop_s, p_s, ndcg_s, fpr_s, cov_s]
@@ -955,7 +953,7 @@ def build_word_document():
     add_para(
         "Micro-Merchant Bias & Activity Threshold Sensitivity: Because M-GATO calculates a relative performance ratio, 56.0% ± 16.5% of top candidates in the unconstrained formulation are micro-merchants (< 10 transactions) due to ratio sensitivity with small denominators. "
         "Evaluating activity thresholds reveals clear operational trade-offs: Y >= 5 retains 22.4% low-volume terminals with NDCG@35 = 0.355 ± 0.082; Y >= 10 eliminates micro-merchants entirely while maintaining competitive targeting (NDCG@35 = 0.327 ± 0.077, P@35 = 0.286 ± 0.056); "
-        "and Y >= 20 restricts targeting to mature enterprises (NDCG = 0.298, P@35 = 0.245). Alternatively, incorporating a continuous exponential discount factor Q_total = Q_graph · (1 - exp(-Y_m / τ_a)) with τ_a = 15 smoothly dampens low-volume noise without hard threshold cuts."
+        "and Y >= 20 restricts targeting to mature enterprises (NDCG = 0.298, P@35 = 0.245). Alternatively, incorporating a continuous exponential discount factor Q_total = Q_graph · (1 - exp(-Y_m / τ_a)) with τ_a = 15 is recommended as the operational deployment formulation to smoothly dampen low-volume noise without hard threshold cuts."
     )
     add_para(
         "Threats to Validity: (1) Peer Cannibalization: the framework assumes independent customer demand; localized competitive cannibalization between neighboring POS terminals is not explicitly modeled. "
@@ -976,7 +974,7 @@ def build_word_document():
         "Operating strictly on standard five-field payment streams, HAMTA establishes discrete-window temporal bipartite graphs, Top-K peer networks modulated by Forman-Ricci curvature, "
         "and Negative Binomial temporal count forecasting. By subtracting calibrated upper natural bounds from conservative peer benchmarks, the M-GATO score identifies merchants exhibiting "
         "structural underperformance relative to their topological peers while filtering ungrounded opportunities through graph evidence shrinkage. "
-        "Simulated experiments across 10 random seeds validate the recovery of predefined structural-underperformance targets across multiple campaign budgets, with statistically significant improvements on selected pairwise comparisons against static graph and tabular baselines. "
+        "Simulated experiments across 10 random seeds validate the recovery of predefined structural-underperformance targets across multiple campaign budgets, demonstrating statistically significant improvements on selected pairwise comparisons against specific baselines. "
         "Importantly, this controlled experiment validates the recovery of a predefined structural perturbation signal, not actual incremental campaign response."
     )
     add_para(
@@ -985,7 +983,7 @@ def build_word_document():
     )
     add_para(
         "Data and Code Availability: The complete Python implementation of HAMTA, baseline algorithms, and synthetic experiment pipelines will be made available upon publication at: "
-        "https://github.com/saeedaliakbari4j/hamta-payment-graph-intelligence. "
+        "Code and synthetic data generator will be released upon publication.. "
         "All synthetic experiment streams are fully reproducible via logged random seeds [42, 101, 202, 303, 404, 505, 606, 707, 808, 909]. "
         "Proprietary bank/PSP payment ledger extracts cannot be released due to banking secrecy and PCI-DSS compliance regulations."
     )
@@ -999,15 +997,15 @@ def build_word_document():
         "[4] R. Forman, \"Bochner's method for cell complexes and combinatorial Ricci curvature,\" Discrete Comput. Geom., vol. 29, no. 3, pp. 323–374, 2003.",
         "[5] M. Weber, E. Saucan, and J. Jost, \"Characterizing complex networks with Forman-Ricci curvature,\" J. Complex Netw., vol. 5, no. 4, pp. 527–550, 2017.",
         "[6] J. Topping, F. Di Giovanni, B. P. Chamberlain, X. Dong, and M. M. Bronstein, \"Understanding over-squashing and bottlenecks via curvature,\" in Proc. ICLR, 2022.",
-        "[7] I. Marisca, J. Bamberger, C. Alippi, and M. M. Bronstein, \"Over-squashing in spatiotemporal graph neural networks,\" in Adv. Neural Inf. Process. Syst. (NeurIPS), vol. 37, pp. 38213–38243, 2024 (publ. 2025).",
+        "[7] I. Marisca, J. Bamberger, C. Alippi, and M. M. Bronstein, \"Over-squashing in spatiotemporal graph neural networks,\" in Adv. Neural Inf. Process. Syst. (NeurIPS), vol. 38, pp. 38213–38243, 2025 (publ. 2025).",
         "[8] A. N. Angelopoulos and S. Bates, \"A gentle introduction to conformal prediction and distribution-free uncertainty,\" arXiv:2107.07511, 2021.",
         "[9] Z. Liu, C. Chen, X. Yang, J. Zhou, X. Li, and L. Song, \"Graph representation learning for merchant incentive optimization in mobile payment marketing,\" in Proc. 28th ACM Int. Conf. Inf. Knowl. Manage. (CIKM), 2019, pp. 2577–2584.",
         "[10] M. Weber et al., \"Anti-money laundering in Bitcoin: Experimenting with graph convolutional networks,\" in Proc. KDD Workshop Anomaly Detection in Finance, 2019.",
         "[11] Y. Dou, Z. Liu, L. Sun, Y. Deng, H. Peng, and P. S. Yu, \"Enhancing graph neural network-based fraud detectors against camouflaged fraudsters,\" in Proc. 29th ACM Int. Conf. Inf. Knowl. Manage. (CIKM), 2020, pp. 315–324.",
         "[12] P. Veličković, G. Cucurull, A. Casanova, A. Romero, P. Liò, and Y. Bengio, \"Graph attention networks,\" in Proc. ICLR, 2018.",
         "[13] W. L. Hamilton, R. Ying, and J. Leskovec, \"Inductive representation learning on large graphs,\" in Adv. Neural Inf. Process. Syst. (NeurIPS), 2017, pp. 1024–1034.",
-        "[14] T. N. Kipf and M. Welling, \"Variational graph auto-encoders,\" in NIPS Workshop Bayesian Deep Learning, 2016.",
-        "[15] M. Tare, C. Rattasits, Y. Wu, and E. Wielewski, \"Representation learning on large transaction networks using inductive architectures,\" Expert Syst. Appl., vol. 248, p. 123480, 2024.",
+        "[12] T. N. Kipf and M. Welling, \"Variational graph auto-encoders,\" in NIPS Workshop Bayesian Deep Learning, 2016.",
+        "[13] M. Tare, C. Rattasits, Y. Wu, and E. Wielewski, 'Representation Learning on Large Non-Bipartite Transaction Networks using GraphSAGE,' in GbRPR 2025 / Springer, 2025.",
         "[16] D. Xu, C. Ruan, E. Korpeoglu, S. Kumar, and K. Achan, \"Inductive representation learning on temporal graphs,\" in Proc. ICLR, 2020.",
         "[17] E. Rossi, B. Chamberlain, F. Frasca, D. Eynard, F. Monti, and M. Bronstein, \"Temporal graph networks on dynamic graphs,\" in ICML Workshop Graph Representation Learning, 2020.",
         "[18] A. Pareja et al., \"EvolveGCN: Evolving graph convolutional networks for dynamic graphs,\" in Proc. 34th AAAI Conf. Artif. Intell., 2020, pp. 5363–5370.",
@@ -1015,7 +1013,7 @@ def build_word_document():
         "[20] M. M. Bronstein, J. Bruna, Y. LeCun, A. Szlam, and P. Vandergheynst, \"Geometric deep learning: Going beyond Euclidean data,\" IEEE Signal Process. Mag., vol. 34, no. 4, pp. 18–42, 2017.",
         "[21] V. D. Blondel, J.-L. Guillaume, R. Lambiotte, and E. Lefebvre, \"Fast unfolding of communities in large networks,\" J. Stat. Mech. Theory Exp., 2008.",
         "[22] F. Di Giovanni, J. Rowbottom, B. P. Chamberlain, T. Markovich, and M. M. Bronstein, \"Graph neural networks as gradient flows: understanding over-smoothing and over-squashing via total variation,\" in Proc. ICLR, 2023.",
-        "[23] S. Zargarbashi, S. Antonelli, and K. Borgwardt, \"Non-exchangeable conformal prediction for temporal graph neural networks,\" in Proc. 31st ACM SIGKDD Conf. Knowl. Discov. Data Min. (KDD), 2025.",
+        "[23] T. Wang, J. Kang, Y. Yan, A. Kulkarni, and D. Zhou, 'Non-exchangeable Conformal Prediction for Temporal Graph Neural Networks,' in Proc. 31st ACM SIGKDD Conf. Knowl. Discov. Data Min. (KDD), 2025, pp. 3031–3042.",
         "[24] S. C. Kumbhakar and C. A. K. Lovell, Stochastic Frontier Analysis. Cambridge, U.K.: Cambridge Univ. Press, 2000.",
         "[25] A. C. Cameron and P. K. Trivedi, Regression Analysis of Count Data, 2nd ed. Cambridge, U.K.: Cambridge Univ. Press, 2013.",
         "[26] E. Ascarza, \"Retention first, but for whom? Identifying targets for churn management,\" J. Mark. Res., vol. 55, no. 2, pp. 181–198, 2018.",
