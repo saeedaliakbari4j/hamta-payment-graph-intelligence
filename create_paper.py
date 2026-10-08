@@ -190,7 +190,7 @@ def build_word_document():
         "We formalize the M-GATO score, integrating graph support evidence with relative performance gaps against robust peer benchmarks. "
         "Evaluated on a synthetic 90-day transaction stream spanning 35,000 transactions, 350 merchants, and 1,480 payment cards across 8 business categories over 10 random seeds, "
         "HAMTA achieves a forecasting mean absolute error of 4.48 transactions and delivers campaign targeting precision of 36.6 percent at top-35 selection, "
-        "achieving a 2.51-fold improvement over random expectation and establishing an operational, treatment-label-free foundation for merchant acquiring portfolio intelligence."
+        "achieving a 2.46-fold improvement over portfolio random expectation (and 2.10-fold over candidate pool baseline) and establishing an operational, treatment-label-free foundation for merchant acquiring portfolio intelligence."
     )
     r_abs_text.font.size = Pt(8.5)
 
@@ -237,7 +237,7 @@ def build_word_document():
         r.font.size = Pt(8.3)
         return p
 
-    def add_equation(eq_text, eq_num):
+    def add_equation(eq_text, eq_num, font_size=7.5):
         tbl = doc.add_table(rows=1, cols=2)
         tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
         tbl.autofit = False
@@ -255,7 +255,7 @@ def build_word_document():
         p0.paragraph_format.space_after = Pt(0.5)
         r0 = p0.add_run(eq_text)
         r0.font.name = 'Times New Roman'
-        r0.font.size = Pt(7.8)
+        r0.font.size = Pt(font_size)
         r0.italic = True
 
         p1 = c1.paragraphs[0]
@@ -414,7 +414,7 @@ def build_word_document():
     add_para(
         "The forecasting target is future transaction count Y_{m, t+1}. Because transaction counts exhibit empirical overdispersion (Var(Y)/E[Y] ≈ 3.24), HAMTA trains a temporal GNN under a Negative Binomial likelihood:"
     )
-    add_equation("L_NB = -∑_m [ ln Γ(Y_m + φ) - ln Γ(φ) - ln Γ(Y_m + 1) + φ ln(φ / (φ + μ̂_m)) + Y_m ln(μ̂_m / (φ + μ̂_m)) ]", 4)
+    add_equation("L_NB = - ∑_m [ ln Γ(Y_m + φ) - ln Γ(φ) - ln Γ(Y_m + 1)\n              + φ ln(φ / (φ + μ̂_m)) + Y_m ln(μ̂_m / (φ + μ̂_m)) ]", 4, font_size=6.8)
     add_para(
         "where μ̂_m is predicted mean count and φ is the inverse-dispersion (size) parameter. Information is restricted strictly to G_{<=t}; chronology-preserving evaluation protocols prevent test-period leakage. "
         "Architecture Specifications: HAMTA utilizes a 2-layer TGAT-inspired temporal graph attention architecture with time-decay positional encoding. "
@@ -451,7 +451,7 @@ def build_word_document():
         "The Merchant Graph-Aware Transaction Opportunity score is formulated as:"
     )
     add_equation("Q_{m, t} = 1 - exp(-O_{m, t} / κ)", 7)
-    add_equation("M-GATO_{m, t} = Q_{m, t} · [ (B^G_{m, t+1} - U_{m, t+1}) / (B^G_{m, t+1} + ε) ]_+", 8)
+    add_equation("M-GATO_{m, t} = Q_{m, t} · [ (B^G_{m, t+1} - U_{m, t+1}) / (B^G_{m, t+1} + ε) ]_+", 8, font_size=7.0)
     add_para(
         "where [x]_+ = max(0, x), O_{m, t} = ∑_{j ∈ N_K(m)} |C_m ∩ C_j| is total shared customer interactions with top-K peers, and κ = 18.0 is a saturation parameter. "
         "M-GATO formalizes a Forecast-Bound Peer Gap (B^G - U) modulated by graph support, functioning as a Peer-Relative Opportunity Score rather than a measurement of current raw underperformance (B^G - Y). "
@@ -485,7 +485,7 @@ def build_word_document():
         "Opportunity Ground-Truth Formalization: In observational payments, commercial growth capacity cannot be directly measured without counterfactual marketing trials. "
         "Therefore, ground truth is formalized strictly as the mathematical recovery of synthetic structural-underperformance targets. "
         "A merchant is labeled Opportunity(m) = 1 iff an exogenous underperformance drop d > 0 was synthetically injected into its transaction generation rate emerging in monitoring Period 4 and persisting into test Period 5. "
-        "Exactly 51 out of 350 merchants (~14.6%) across all 8 business categories are selected via stratified random sampling from candidates with active peer baselines. Target-peer overlap is low: on average only 11.8% of top-K peers are themselves targets, ensuring uncontaminated peer benchmarks. "
+        "Exactly 52 out of 350 merchants (~14.9%) across all 8 business categories are selected via stratified random sampling from candidates with active peer baselines (average candidate pool 299 merchants across 10 seeds, yielding 17.4% in-pool random expectation). Target-peer overlap is low: on average only 11.8% of top-K peers are themselves targets, ensuring uncontaminated peer benchmarks. "
         "Injected drop magnitudes span Scenario A (d = 0.18, noise σ = 3.0), Scenario B (d = 0.32, noise σ = 1.8), and Scenario C (d = 0.48, noise σ = 0.9). "
         "In Scenario 0 (Negative Control), d = 0 for all merchants, establishing an empty positive set (TP = 0 by construction) to evaluate false discovery."
     )
@@ -644,10 +644,10 @@ def build_word_document():
     )
 
     add_para(
-        "Under synthetic opportunity prevalence of 51/350 (random expectation = 0.146, 14.6%), Table II confirms that HAMTA Proposed (M-GATO) achieves Precision@35 = 0.366 ± 0.120, "
-        "Recall@35 = 0.246 ± 0.081, R-Precision = 0.342 ± 0.077, NDCG@35 = 0.382 ± 0.116, and MAP@35 = 0.180 ± 0.092. R-Precision evaluates precision at R = 51 targets, while MAP@35 denotes mean average precision truncated at rank 35 across seeds. "
-        "This represents a 2.51× lift over random selection and substantially outperforms Lowest Volume (P@35 = 0.197 ± 0.053) and Tabular Point Gap (P@35 = 0.214 ± 0.064). "
-        "Recall@35 reaches 0.246 ± 0.081, noting that maximum possible Recall@35 under 35 slots for 51 targets is capped at 35/51 = 0.686."
+        "Under synthetic opportunity prevalence of 52/350 (portfolio random expectation = 0.1486, ~14.9%; candidate pool random expectation = 52/299 = 0.174, 17.4%), Table II confirms that HAMTA Proposed (M-GATO) achieves Precision@35 = 0.366 ± 0.120, "
+        "Recall@35 = 0.246 ± 0.081, R-Precision = 0.342 ± 0.077, NDCG@35 = 0.382 ± 0.116, and MAP@35 = 0.180 ± 0.092. R-Precision evaluates precision at R = 52 targets, while MAP@35 denotes mean average precision truncated at rank 35 across seeds. "
+        "This represents a 2.46× lift over portfolio random selection (and 2.10× lift over the candidate pool baseline) and substantially outperforms Lowest Volume (P@35 = 0.197 ± 0.053) and Tabular Point Gap (P@35 = 0.214 ± 0.064). "
+        "Recall@35 reaches 0.246 ± 0.081, noting that maximum possible Recall@35 under 35 slots for 52 targets is capped at 35/52 = 0.673 (67.3%)."
     )
 
     # Multi-Budget Table & Analysis
@@ -714,9 +714,12 @@ def build_word_document():
             set_cell_margins(cell, 12, 12, 8, 8)
 
     add_para(
-        "Multi-Budget Analysis: At the most restrictive campaign budget (K=10), SFA Frontier Gap achieves higher precision (0.430 ± 0.127) than HAMTA (0.400 ± 0.089), demonstrating the strength of parametric frontiers on severe budget bottlenecks. "
-        "However, HAMTA is competitive under highly constrained budgets and consistently outperforms the SFA baseline for moderate and larger campaign capacities (K ∈ {20, 35, 50}) in the reported synthetic experiments: "
-        "(1) At K=20, HAMTA achieves Precision@20 = 0.410 versus SFA (0.345); (2) At K=35, HAMTA (0.366) exceeds SFA (0.357); and (3) At K=50, HAMTA maintains precision 0.340 versus SFA 0.322. Secondary comparisons are exploratory unadjusted diagnostics."
+        "Multi-Budget Analysis & Significance Testing: At very small budget K = 10, the SFA frontier baseline achieves higher precision (0.430 ± 0.127) than HAMTA (0.400 ± 0.089). "
+        "However, as campaign capacity expands, HAMTA scales more effectively and overtakes SFA at K = 20 (0.410 vs. 0.345), K = 35 (0.366 vs. 0.357), and K = 50 (0.340 vs. 0.322). "
+        "Under Holm-Bonferroni adjustment across evaluated baselines, HAMTA maintains statistically significant superiority (p_adj < 0.05) over conventional baselines: "
+        "at K = 10 against Lowest Volume (p_adj = 0.0156) and Tabular GBDT (p_adj = 0.0293); at K = 20 against Lowest Volume (p_adj = 0.0156) and Tabular GBDT (p_adj = 0.0176); "
+        "and at K = 35 against Lowest Volume (p_adj = 0.0176) and Tabular GBDT (p_adj = 0.0078). Against Static GNN at K = 35, the raw paired Wilcoxon test is significant (p = 0.0488), "
+        "adjusting to p_adj = 0.0977 under Holm-Bonferroni. Differences between HAMTA and SFA across budgets do not reach statistical significance, establishing SFA as a competitive non-parametric frontier benchmark."
     )
 
     add_heading_2("D. Multi-Scenario Circularity & Robustness Evaluation")
@@ -1002,21 +1005,21 @@ def build_word_document():
         "[6] J. Topping, F. Di Giovanni, B. P. Chamberlain, X. Dong, and M. M. Bronstein, \"Understanding over-squashing and bottlenecks via curvature,\" in Proc. ICLR, 2022.",
         "[7] I. Marisca, J. Bamberger, C. Alippi, and M. M. Bronstein, \"Over-squashing in spatiotemporal graph neural networks,\" in Adv. Neural Inf. Process. Syst. (NeurIPS), vol. 38, pp. 38213–38243, 2025 (publ. 2025).",
         "[8] A. N. Angelopoulos and S. Bates, \"A gentle introduction to conformal prediction and distribution-free uncertainty,\" arXiv:2107.07511, 2021.",
-        "[9] Z. Liu, C. Chen, X. Yang, J. Zhou, X. Li, and L. Song, \"Graph representation learning for merchant incentive optimization in mobile payment marketing,\" in Proc. 28th ACM Int. Conf. Inf. Knowl. Manage. (CIKM), 2019, pp. 2577–2584.",
+        "[9] Z. Liu, D. Wang, Q. Yu, Z. Zhang, Y. Shen, J. Ma, W. Zhong, J. Gu, J. Zhou, S. Yang, and Y. Qi, \"Graph representation learning for merchant incentive optimization in mobile payment marketing,\" in Proc. 28th ACM Int. Conf. Inf. Knowl. Manage. (CIKM), 2019, pp. 2577–2584.",
         "[10] M. Weber et al., \"Anti-money laundering in Bitcoin: Experimenting with graph convolutional networks,\" in Proc. KDD Workshop Anomaly Detection in Finance, 2019.",
         "[11] Y. Dou, Z. Liu, L. Sun, Y. Deng, H. Peng, and P. S. Yu, \"Enhancing graph neural network-based fraud detectors against camouflaged fraudsters,\" in Proc. 29th ACM Int. Conf. Inf. Knowl. Manage. (CIKM), 2020, pp. 315–324.",
         "[12] P. Veličković, G. Cucurull, A. Casanova, A. Romero, P. Liò, and Y. Bengio, \"Graph attention networks,\" in Proc. ICLR, 2018.",
         "[13] W. L. Hamilton, R. Ying, and J. Leskovec, \"Inductive representation learning on large graphs,\" in Adv. Neural Inf. Process. Syst. (NeurIPS), 2017, pp. 1024–1034.",
         "[14] T. N. Kipf and M. Welling, \"Variational graph auto-encoders,\" in NIPS Workshop Bayesian Deep Learning, 2016.",
-        "[15] M. Tare, C. Rattasits, Y. Wu, and E. Wielewski, \"Harnessing GraphSAGE for Learning Representations of Massive Transactional Networks,\" in Proc. IAPR Workshop Graph-Based Representations in Pattern Recognition (GbRPR), Springer, 2025, pp. 179–188.",
+        "[15] M. Tare, C. Rattasits, Y. Wu, and E. Wielewski, \"Harnessing GraphSAGE for learning representations of massive transactional networks,\" in Graph-Based Representations in Pattern Recognition (GbRPR), Lecture Notes in Computer Science, vol. 14782, Springer, Cham, 2025, pp. 179–188.",
         "[16] D. Xu, C. Ruan, E. Korpeoglu, S. Kumar, and K. Achan, \"Inductive representation learning on temporal graphs,\" in Proc. ICLR, 2020.",
         "[17] E. Rossi, B. Chamberlain, F. Frasca, D. Eynard, F. Monti, and M. Bronstein, \"Temporal graph networks on dynamic graphs,\" in ICML Workshop Graph Representation Learning, 2020.",
         "[18] A. Pareja et al., \"EvolveGCN: Evolving graph convolutional networks for dynamic graphs,\" in Proc. 34th AAAI Conf. Artif. Intell., 2020, pp. 5363–5370.",
-        "[19] J. Zhang et al., \"A survey on dynamic graph neural networks,\" Front. Comput. Sci., vol. 19, no. 1, p. 191301, 2025.",
+        "[19] Y. Zheng, L. Yi, and Z. Wei, \"A survey of dynamic graph neural networks,\" Front. Comput. Sci., vol. 19, no. 6, Article 196323, 2025.",
         "[20] M. M. Bronstein, J. Bruna, Y. LeCun, A. Szlam, and P. Vandergheynst, \"Geometric deep learning: Going beyond Euclidean data,\" IEEE Signal Process. Mag., vol. 34, no. 4, pp. 18–42, 2017.",
         "[21] V. D. Blondel, J.-L. Guillaume, R. Lambiotte, and E. Lefebvre, \"Fast unfolding of communities in large networks,\" J. Stat. Mech. Theory Exp., 2008.",
         "[22] F. Di Giovanni, J. Rowbottom, B. P. Chamberlain, T. Markovich, and M. M. Bronstein, \"Graph neural networks as gradient flows: understanding over-smoothing and over-squashing via total variation,\" in Proc. ICLR, 2023.",
-        "[23] T. Wang, J. Kang, Y. Yan, A. Kulkarni, and D. Zhou, 'Non-exchangeable Conformal Prediction for Temporal Graph Neural Networks,' in Proc. 31st ACM SIGKDD Conf. Knowl. Discov. Data Min. (KDD), 2025, pp. 3031–3042.",
+        "[23] T. Wang, J. Kang, Y. Yan, A. Kulkarni, and D. Zhou, \"Non-exchangeable conformal prediction for temporal graph neural networks,\" in Proc. 31st ACM SIGKDD Conf. Knowl. Discov. Data Min. (KDD), vol. 2, 2025, pp. 3031–3042.",
         "[24] S. C. Kumbhakar and C. A. K. Lovell, Stochastic Frontier Analysis. Cambridge, U.K.: Cambridge Univ. Press, 2000.",
         "[25] A. C. Cameron and P. K. Trivedi, Regression Analysis of Count Data, 2nd ed. Cambridge, U.K.: Cambridge Univ. Press, 2013.",
         "[26] E. Ascarza, \"Retention first, but for whom? Identifying targets for churn management,\" J. Mark. Res., vol. 55, no. 2, pp. 181–198, 2018.",

@@ -49,9 +49,9 @@ def to_fa_num(s):
 
 
 # Comprehensive regex for matching inline mathematical, complexity, and Latin tokens
-# Prevents expressions like O(|C(m)| log K), [x]_+ = max(0, x), or η = 0.25 from being split across RTL runs
+# Prevents expressions like O(|C(m)| log K), [x]_+ = max(0, x), or citations [6, 7, 22] from being split across RTL runs
 TOKEN = re.compile(
-    r'(?P<cite>\[\d+(?:[,\-\s]\d+)*\])'
+    r'(?P<cite>\[[\d\.]+(?:[\s,\-–]+[\d\.]+)*\])'
     r'|(?P<bigo>O\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))'
     r'|(?P<bracket_eq>\[[^\]]+\]_?\+?\s*=\s*[A-Za-z0-9_\u0300-\u036f\(\),\s]+)'
     r'|(?P<topk>Top-K(?:\s*\([^\)]+\))?)'
@@ -83,6 +83,11 @@ def _set_fonts(run, latin):
             bd = OxmlElement("w:bidi")
             rpr.append(bd)
         bd.set(qn("w:val"), "0")
+        rtl = rpr.find(qn("w:rtl"))
+        if rtl is None:
+            rtl = OxmlElement("w:rtl")
+            rpr.append(rtl)
+        rtl.set(qn("w:val"), "0")
     else:
         rf.set(qn("w:hint"), "cs")
         rf.set(qn("w:ascii"), "B Mitra")
@@ -144,8 +149,8 @@ def _emit(par, text, latin, style=None, **kw):
     if not text:
         return
     if latin:
-        # Replace spaces with non-breaking spaces for math expressions / Big-O so Word never line-breaks mid-formula
-        if any(c in text for c in ("=", "≈", "∈", "≤", "≥", "<", ">", "·", "O(", "Top-K", "max(", "Var(")):
+        # Replace spaces with non-breaking spaces for math expressions / Big-O / bracketed citations
+        if any(c in text for c in ("=", "≈", "∈", "≤", "≥", "<", ">", "·", "O(", "Top-K", "max(", "Var(")) or (text.startswith("[") and text.endswith("]")):
             text = text.replace(" ", "\u00A0")
         # Wrap with Unicode Left-to-Right Mark (LRM \u200E) to ensure strict LTR layout in RTL paragraphs
         text = f"\u200E{text}\u200E"
@@ -170,7 +175,9 @@ def add_text(par, text, bold=False, italic=False, style=None):
                 e -= 1
         if s > pos:
             _emit(par, text[pos:s], False, style=style, bold=bold, italic=italic)
-        if m.group("sub"):
+        if m.group("cite"):
+            _emit(par, text[s:e], True, style=style, bold=bold, italic=False)
+        elif m.group("sub"):
             full_sub = m.group("sub")
             u_idx = full_sub.index("_{")
             base = full_sub[:u_idx]
@@ -651,7 +658,7 @@ def build():
            "و ساختار همتایان را از طریق اشتراک مشتریان، تجانس صنف و انحنای فرمن-ریچی استخراج می‌کند. سپس با مدل توجه گراف زمانی، تابع درست‌نمایی دوجمله‌ای منفی و واسنجی زمانی بازه پیش‌بینی، "
            "کران بالای عملکرد و بنچ‌مارک همتایان تخمین زده شده و شاخص M-GATO جهت اولویت‌بندی کمپین محاسبه می‌گردد. "
            f"ارزیابی تجربی بر روی {to_fa_num('35000')} تراکنش شبیه‌سازی‌شده طی {to_fa_num('10')} سید تصادفی نشان می‌دهد HAMTA با ثبت خطای میانگین {to_fa_num('4.48')} تراکنش و "
-           f"دقت رتبه‌بندی {to_fa_num('36.6')} درصد، به بهبود {to_fa_num('2.51')} برابری نسبت به شانس تصادفی دست یافته و زیرساختی عملیاتی و بدون برچسب مداخله برای هوشمندی سبد پذیرندگان فراهم می‌سازد.")
+           f"دقت رتبه‌بندی {to_fa_num('36.6')} درصد، به بهبود {to_fa_num('2.46')} برابری نسبت به شانس تصادفی کل سبد (و {to_fa_num('2.10')} برابری نسبت به جامعه کاندیداها) دست یافته و زیرساختی عملیاتی و بدون برچسب مداخله برای هوشمندی سبد پذیرندگان فراهم می‌سازد.")
     B.para("Abstract2", "چارچوب HAMTA تنها یک مدل یادگیری ماشین نیست، بلکه یک مؤلفه تصمیم‌یار (Decision-support component) در معماری مدیریت پذیرندگان است. این معماری از جریان داده‌های تراکنشی آغاز شده، در لایه هوشمندی گراف پردازش می‌گردد و توسط موتور تصمیم‌گیری M-GATO به واحد بازاریابی جهت اجرای کمپین و دریافت بازخورد سازمانی متصل می‌شود.")
 
     B.para("Heading 0", "کلمات کلیدی")
@@ -830,7 +837,7 @@ def build():
     B.para("Text",
            "فرمول‌بندی برچسب فرصت: برچسب فرصت منحصراً به صورت بازیابی ریاضی اهداف افت ساختاری مصنوعی تعریف می‌شود. "
            "یک پذیرنده دارای برچسب فرصت (Opportunity(m) = 1) است اگر و تنها اگر افت ساختاری برون‌زای d > 0 در نرخ تولید تراکنش آن از دوره پایش ۴ آغاز شده و در دوره آزمون ۵ تداوم یافته باشد. "
-           f"دقیقاً تعداد {to_fa_num('51')} پذیرنده از ۳۵۰ پذیرنده ({to_fa_num('14.6')}٪) با نمونه‌گیری طبقه‌بندی‌شده از میان کاندیداهای دارای بنچ‌مارک فعال همتایان در تمامی اصناف به عنوان هدف تعیین شدند. هم‌پوشانی هدف-همتا پایین بوده و به طور میانگین تنها ۱۱٫۸٪ از همتایان یک هدف، خودشان هدف هستند. "
+           f"دقیقاً تعداد {to_fa_num('52')} پذیرنده از ۳۵۰ پذیرنده ({to_fa_num('14.9')}٪) با نمونه‌گیری طبقه‌بندی‌شده از میان کاندیداهای دارای بنچ‌مارک فعال همتایان (میانگین ۲۹۹ پذیرنده در ۱۰ سید با شانس تصادفی درون‌جامعه‌ای ۱۷٫۴٪) در تمامی اصناف به عنوان هدف تعیین شدند. هم‌پوشانی هدف-همتا پایین بوده و به طور میانگین تنها ۱۱٫۸٪ از همتایان یک هدف، خودشان هدف هستند. "
            "سناریوها شامل الف (افت ۱۸٪ با نویز ۳٫۰)، ب (افت ۳۲٪ با نویز ۱٫۸) و ج (افت ۴۸٪ با نویز ۰٫۹) هستند. در سناریوی شاهد منفی (Scenario 0)، مقدار افت برای تمامی پذیرندگان صفر بوده تا وضعیت عدم وجود مثبت واقعی (TP = 0) جهت ارزیابی نرخ هشدار کاذب بررسی شود.")
     B.para("Text",
            "تنظیم ابرپارامترها: مقادیر بهینه در پنجره تاریخی P0-دوره ۳ تنظیم گردیدند: "
@@ -906,10 +913,10 @@ def build():
     B.caption("شکل (4) : مقایسه کمی مدل‌ها در (الف) دقت پیش‌بینی و (ب) کیفیت اولویت‌بندی کمپین در ۱۰ سید تصادفی")
 
     B.para("Text1",
-           f"با توجه به شیوع فرصت‌های واقعی در سطح {to_fa_num('51')} پذیرنده از ۳۵۰ پذیرنده (شانس تصادفی معادل {to_fa_num('0.146')} یا {to_fa_num('14.6')}٪)، نتایج جدول (2) نشان می‌دهد که "
-           f"مدل پیشنهادی HAMTA با Precision@35 معادل {to_fa_num('0.366 ± 0.120')}، Recall@35 معادل {to_fa_num('0.246 ± 0.081')} (با سقف نظری {to_fa_num('0.686')} برای ۳۵ جایگاه از ۵۱ هدف)، "
+           f"با توجه به شیوع فرصت‌های واقعی در سطح {to_fa_num('52')} پذیرنده از ۳۵۰ پذیرنده (شانس تصادفی کل سبد معادل {to_fa_num('0.1486')} یا {to_fa_num('14.9')}٪، و شانس تصادفی جامعه کاندیداها معادل {to_fa_num('17.4')}٪)، نتایج جدول (2) نشان می‌دهد که "
+           f"مدل پیشنهادی HAMTA با Precision@35 معادل {to_fa_num('0.366 ± 0.120')}، Recall@35 معادل {to_fa_num('0.246 ± 0.081')} (با سقف نظری {to_fa_num('0.673')} برای ۳۵ جایگاه از ۵۲ هدف: ۳۵/۵۲ = ۰٫۶۷۳)، "
            f"NDCG@35 معادل {to_fa_num('0.382 ± 0.116')} و R-Precision معادل {to_fa_num('0.342 ± 0.077')}، "
-           f"به ضریب برتری {to_fa_num('2.51')} برابری نسبت به انتخاب تصادفی دست می‌یابد.")
+           f"به ضریب برتری {to_fa_num('2.46')} برابری نسبت به انتخاب تصادفی کل سبد (و {to_fa_num('2.10')} برابری نسبت به خط‌مبنای تصادفی درون‌جامعه کاندیداها) دست می‌یابد.")
 
     B.para("Heading 2", "5.3. ارزیابی چندبودجه‌ای و آزمون معناداری آماری")
     B.para("Text1",
@@ -940,8 +947,10 @@ def build():
            f"تحلیل بودجه‌های چندگانه و معناداری آماری: در سقف بسیار محدود K = 10، مدل مرز تصادفی SFA به دقت بالاتری ({to_fa_num('0.430 ± 0.127')}) نسبت به HAMTA ({to_fa_num('0.400 ± 0.089')}) دست می‌یابد؛ "
            f"اما با افزایش ظرفیت کمپین، HAMTA رقابت‌پذیری بیشتری نشان داده و از بودجه K = 20 به بعد بر خط‌مبنای مرزی SFA غلبه می‌کند: "
            f"در بودجه K = 20 دقت {to_fa_num('0.410')} در برابر {to_fa_num('0.345')}؛ در K = 35 دقت {to_fa_num('0.366')} در برابر {to_fa_num('0.357')}؛ و در K = 50 دقت {to_fa_num('0.340')} در برابر {to_fa_num('0.322')}. "
-           "تحت تصحیح هولم-بونفرونی برای مقایسه‌های چندگانه، برتری‌های HAMTA نسبت به خط‌مبناهای سنتی معناداری آماری خود را حفظ می‌نمایند (p_adj < 0.05): "
-           "در بودجه K = 10 نسبت به کمترین حجم (p = 0.015) و مدل جدولی (p = 0.039)؛ در بودجه K = 20 نسبت به کمترین حجم (p = 0.005) و مدل جدولی (p = 0.005)؛ و در K = 35 نسبت به گراف ایستا (p = 0.0488).")
+           "تحت تصحیح هولم-بونفرونی برای مقایسه‌های چندگانه، برتری‌های HAMTA نسبت به خط‌مبناهای سنتی کمترین حجم و مدل جدولی در تمامی بودجه‌ها کاملاً معنادار باقی می‌ماند (p_adj < 0.05): "
+           "در بودجه K = 10 نسبت به کمترین حجم (p_adj = 0.0156) و مدل جدولی (p_adj = 0.0293)؛ در بودجه K = 20 نسبت به کمترین حجم (p_adj = 0.0156) و مدل جدولی (p_adj = 0.0176)؛ "
+           "و در K = 35 نسبت به کمترین حجم (p_adj = 0.0176) و مدل جدولی (p_adj = 0.0078). نسبت به گراف ایستا در K = 35، آزمون خام ویلکاکسون معنادار است (p = 0.0488) که پس از تصحیح هولم-بونفرونی به p_adj = 0.0977 تعدیل می‌شود. "
+           "تفاوت‌های HAMTA با خط‌مبنای SFA به سطح معناداری آماری نمی‌رسد و SFA به عنوان یک بنچ‌مارک مرزی ناپارامتریک قدرتمند عمل می‌نماید.")
 
     B.para("Heading 2", "5.4. ارزیابی استحکام و تحلیل عدم دورباطل در سناریوها")
     B.para("Text1",
@@ -1125,7 +1134,7 @@ def build():
          ("Advances in Neural Information Processing Systems (NeurIPS 38)", 1), (", Vol. 38, pp. 38213-38243, 2024.", 0)],
         [("A. N. Angelopoulos, S. Bates, \"A gentle introduction to conformal prediction and distribution-free uncertainty\", ", 0),
          ("arXiv preprint arXiv:2107.07511", 1), (", 2021.", 0)],
-        [("Z. Liu, C. Chen, X. Yang, J. Zhou, X. Li, L. Song, \"Graph representation learning for merchant incentive optimization in mobile payment marketing\", ", 0),
+        [("Z. Liu, D. Wang, Q. Yu, Z. Zhang, Y. Shen, J. Ma, W. Zhong, J. Gu, J. Zhou, S. Yang, Y. Qi, \"Graph representation learning for merchant incentive optimization in mobile payment marketing\", ", 0),
          ("Proc. 28th ACM Int. Conf. on Information and Knowledge Management (CIKM)", 1), (", pp. 2577-2584, 2019.", 0)],
         [("M. Weber et al., \"Anti-money laundering in Bitcoin: Experimenting with graph convolutional networks\", ", 0),
          ("Proc. KDD Workshop on Anomaly Detection in Finance", 1), (", 2019.", 0)],
@@ -1137,24 +1146,24 @@ def build():
          ("Advances in Neural Information Processing Systems (NeurIPS 30)", 1), (", pp. 1024-1034, 2017.", 0)],
         [("T. N. Kipf, M. Welling, \"Variational graph auto-encoders\", ", 0),
          ("NIPS Workshop on Bayesian Deep Learning", 1), (", 2016.", 0)],
-        [("M. Tare, C. Rattasits, Y. Wu, E. Wielewski, \"Representation learning on large transaction networks using inductive architectures\", ", 0),
-         ("Expert Systems with Applications", 1), (", Vol. 248, p. 123480, 2024.", 0)],
+        [("M. Tare, C. Rattasits, Y. Wu, E. Wielewski, \"Harnessing GraphSAGE for learning representations of massive transactional networks\", ", 0),
+         ("Graph-Based Representations in Pattern Recognition (GbRPR), Lecture Notes in Computer Science", 1), (", Vol. 14782, pp. 179-188, Springer, 2025.", 0)],
         [("D. Xu, C. Ruan, E. Korpeoglu, S. Kumar, K. Achan, \"Inductive representation learning on temporal graphs\", ", 0),
          ("Proc. 8th Int. Conf. on Learning Representations (ICLR)", 1), (", 2020.", 0)],
         [("E. Rossi, B. Chamberlain, F. Frasca, D. Eynard, F. Monti, M. Bronstein, \"Temporal graph networks on dynamic graphs\", ", 0),
          ("ICML Workshop on Graph Representation Learning", 1), (", 2020.", 0)],
         [("A. Pareja et al., \"EvolveGCN: Evolving graph convolutional networks for dynamic graphs\", ", 0),
          ("Proc. 34th AAAI Conf. on Artificial Intelligence", 1), (", pp. 5363-5370, 2020.", 0)],
-        [("J. Zhang et al., \"A survey on dynamic graph neural networks\", ", 0),
-         ("Frontiers of Computer Science", 1), (", Vol. 19, No. 1, p. 191301, 2025.", 0)],
+        [("Y. Zheng, L. Yi, Z. Wei, \"A survey of dynamic graph neural networks\", ", 0),
+         ("Frontiers of Computer Science", 1), (", Vol. 19, No. 6, Art. 196323, 2025.", 0)],
         [("M. M. Bronstein, J. Bruna, Y. LeCun, A. Szlam, P. Vandergheynst, \"Geometric deep learning: Going beyond Euclidean data\", ", 0),
          ("IEEE Signal Processing Magazine", 1), (", Vol. 34, No. 4, pp. 18-42, 2017.", 0)],
         [("V. D. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre, \"Fast unfolding of communities in large networks\", ", 0),
          ("Journal of Statistical Mechanics: Theory and Experiment", 1), (", 2008.", 0)],
         [("F. Di Giovanni, J. Rowbottom, B. P. Chamberlain, T. Markovich, M. M. Bronstein, \"Graph neural networks as gradient flows: understanding over-smoothing and over-squashing via total variation\", ", 0),
          ("Proc. 11th Int. Conf. on Learning Representations (ICLR)", 1), (", 2023.", 0)],
-        [("S. Zargarbashi, S. Antonelli, K. Borgwardt, \"Non-exchangeable conformal prediction for temporal graph neural networks\", ", 0),
-         ("Proc. 31st ACM SIGKDD Conf. on Knowledge Discovery and Data Mining (KDD)", 1), (", 2025.", 0)],
+        [("T. Wang, J. Kang, Y. Yan, A. Kulkarni, D. Zhou, \"Non-exchangeable conformal prediction for temporal graph neural networks\", ", 0),
+         ("Proc. 31st ACM SIGKDD Conf. on Knowledge Discovery and Data Mining (KDD)", 1), (", Vol. 2, pp. 3031-3042, 2025.", 0)],
         [("S. C. Kumbhakar, C. A. K. Lovell, \"Stochastic Frontier Analysis\", ", 0),
          ("Cambridge University Press", 1), (", Cambridge, U.K., 2000.", 0)],
         [("A. C. Cameron, P. K. Trivedi, \"Regression Analysis of Count Data\", 2nd ed., ", 0),
