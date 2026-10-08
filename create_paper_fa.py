@@ -48,14 +48,20 @@ def to_fa_num(s):
     return s.translate(trans)
 
 
-# Include mathematical operators (=, <, >, <=, >=, etc.) so expressions like "η = 0.25"
-# or "λ = 0.65" are kept as a single continuous Latin/math token and not split across RTL runs
+# Comprehensive regex for matching inline mathematical, complexity, and Latin tokens
+# Prevents expressions like O(|C(m)| log K), [x]_+ = max(0, x), or η = 0.25 from being split across RTL runs
 TOKEN = re.compile(
-    r"(?P<sub>[A-Za-zα-ωΑ-Ω]_\{[^}]+\})"
-    r"|(?P<cite>\[\d+(?:[,\-]\d+)*\])"
-    r"|(?P<lat>[A-Za-z0-9α-ωΑ-Ω@]"
-    r"[A-Za-z0-9_\.\+/\-α-ωΑ-Ω@:=<>≤≥≈±∈∪∩×·\^\[\]%,~\\|\'\*]*"
-    r"(?:\s+[A-Za-z0-9_\.\+/\-α-ωΑ-Ω@:=<>≤≥≈±∈∪∩×·\^\[\]%,~\\|\'\*]+)*)"
+    r'(?P<cite>\[\d+(?:[,\-\s]\d+)*\])'
+    r'|(?P<bigo>O\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))'
+    r'|(?P<bracket_eq>\[[^\]]+\]_?\+?\s*=\s*[A-Za-z0-9_\u0300-\u036f\(\),\s]+)'
+    r'|(?P<topk>Top-K(?:\s*\([^\)]+\))?)'
+    r'|(?P<set_in>[A-Za-z\u03b1-\u03c9\u0391-\u03a9]\s*∈\s*(?:\[[^\]]+\]|\{[^\}]+\}))'
+    r'|(?P<var_eq>(?:\()?Var\([^\)]+\)\s*/\s*E\[[^\]]+\]\s*≈\s*[\d\.]+(?:\))?)'
+    r'|(?P<sub>[A-Za-z\u03b1-\u03c9\u0391-\u03a9\u0300-\u036f]_\{[^}]+\})'
+    r'|(?P<func>[A-Za-z\u03b1-\u03c9\u0391-\u03a9\u0300-\u036fΔ]+(?:\([A-Za-z0-9_\u03b1-\u03c9\u0391-\u03a9\u0300-\u036f,\s\(\)]+\))+)'
+    r'|(?P<lat>[A-Za-z0-9\u03b1-\u03c9\u0391-\u03a9\u0300-\u036f@Δ]'
+    r'[A-Za-z0-9_\.\+/\-\u03b1-\u03c9\u0391-\u03a9\u0300-\u036f@:=<>≤≥≈±∈∪∩×·\^\|~\\\'\*\[\]Δ]*'
+    r'(?:\s+[A-Za-z0-9_\.\+/\-\u03b1-\u03c9\u0391-\u03a9\u0300-\u036f@:=<>≤≥≈±∈∪∩×·\^\|~\\\'\*\[\]Δ]+)*)'
 )
 
 
@@ -138,6 +144,9 @@ def _emit(par, text, latin, style=None, **kw):
     if not text:
         return
     if latin:
+        # Replace spaces with non-breaking spaces for math expressions / Big-O so Word never line-breaks mid-formula
+        if any(c in text for c in ("=", "≈", "∈", "≤", "≥", "<", ">", "·", "O(", "Top-K", "max(", "Var(")):
+            text = text.replace(" ", "\u00A0")
         # Wrap with Unicode Left-to-Right Mark (LRM \u200E) to ensure strict LTR layout in RTL paragraphs
         text = f"\u200E{text}\u200E"
     r = par.add_run(text)
@@ -162,7 +171,10 @@ def add_text(par, text, bold=False, italic=False, style=None):
         if s > pos:
             _emit(par, text[pos:s], False, style=style, bold=bold, italic=italic)
         if m.group("sub"):
-            base, sub = m.group("sub")[0], m.group("sub")[3:-1]
+            full_sub = m.group("sub")
+            u_idx = full_sub.index("_{")
+            base = full_sub[:u_idx]
+            sub = full_sub[u_idx + 2 : -1]
             _emit(par, base, True, style=style, bold=bold, italic=True)
             _emit(par, sub, True, style=style, bold=bold, sub=True)
         else:
