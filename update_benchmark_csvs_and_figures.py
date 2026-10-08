@@ -13,17 +13,14 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import networkx as nx
 
-import arabic_reshaper
-from bidi.algorithm import get_display
-
 from src.config import cfg
 
-def reshape_fa(text: str) -> str:
-    try:
-        reshaped = arabic_reshaper.reshape(text)
-        return get_display(reshaped)
-    except Exception:
-        return text
+plt.rcParams["font.sans-serif"] = ["Tahoma", "Arial", "Segoe UI", "DejaVu Sans"]
+plt.rcParams["font.family"] = "sans-serif"
+plt.rcParams["axes.unicode_minus"] = False
+
+def fa(text: str) -> str:
+    return str(text)
 
 # 1. Load Phase 1 Audited CSVs
 P1_DIR = os.path.join(cfg.BASE_DIR, "output", "phase1_results")
@@ -134,23 +131,23 @@ plt.close()
 fig, ax = plt.subplots(figsize=(10.5, 3.8), dpi=300)
 ax.axis("off")
 steps_fa = [
-    (reshape_fa("۱. دریافت داده و گراف دوبخشی"), reshape_fa("• داده ۵ فیلدی بدون شناسه مستقیم\n• ارتباط زمانی کارت و پذیرنده\n• پنجره‌های زمانی ۱۵ روزه"), "#E3F2FD", "#1565C0"),
-    (reshape_fa("۲. استخراج گراف همتایان پذیرنده"), reshape_fa("• اشتراک سبد کارت‌های مشترک\n• تجانس صنف اقتصادی\n• انحنای گسسته فرمن-ریچی"), "#E8F5E9", "#2E7D32"),
-    (reshape_fa("۳. پیش‌بینی زمانی و واسنجی عدم‌قطعیت"), reshape_fa("• یادگیری با درست‌نمایی دوجمله‌ای منفی\n• اعتبارسنجی پیش‌رونده زمانی\n• حد بالای طبیعی U_{m,t+1}"), "#FFF3E0", "#E65100"),
-    (reshape_fa("۴. امتیاز M-GATO و اولویت‌بندی کمپین"), reshape_fa("• بنچ‌مارک وزنی همتایان B^G\n• شکاف نسبی عملکرد نسبت به حد بالا\n• جریمه عدم‌شواهد با ضریب Q"), "#F3E5F5", "#6A1B9A")
+    ("۱. دریافت جریان داده\nو گراف دوبخشی", "• داده ۵ فیلدی تراکنش\n• ارتباط زمانی کارت-پذیرنده\n• پنجره‌های ۱۵ روزه", "#E3F2FD", "#1565C0"),
+    ("۲. استخراج گراف\nهمتایان پذیرنده", "• اشتراک سبد کارت‌ها\n• تجانس صنف اقتصادی\n• انحنای فرمن-ریچی", "#E8F5E9", "#2E7D32"),
+    ("۳. پیش‌بینی زمانی و\nواسنجی عدم‌قطعیت", "• مدل دوجمله‌ای منفی\n• اعتبارسنجی زمانی\n• کران بالای طبیعی U", "#FFF3E0", "#E65100"),
+    ("۴. امتیاز M-GATO و\nاولویت‌بندی کمپین", "• بنچ‌مارک همتایان B^G\n• شکاف عملکردی نسبی\n• جریمه عدم‌شواهد Q", "#F3E5F5", "#6A1B9A")
 ]
 for idx, (title, text, bg, border) in enumerate(steps_fa):
     x = 0.02 + idx * 0.25
-    rect = mpatches.FancyBboxPatch((x, 0.15), 0.22, 0.70, boxstyle=mpatches.BoxStyle("Round", pad=0.03),
+    rect = mpatches.FancyBboxPatch((x, 0.12), 0.22, 0.76, boxstyle=mpatches.BoxStyle("Round", pad=0.03),
                                    facecolor=bg, edgecolor=border, linewidth=1.8, transform=ax.transAxes)
     ax.add_patch(rect)
-    ax.text(x + 0.11, 0.76, title, ha="center", va="top", fontsize=9.2, fontweight="bold", color=border, transform=ax.transAxes)
-    ax.text(x + 0.015, 0.22, text, ha="left", va="bottom", fontsize=8.0, color="#212121", transform=ax.transAxes)
+    ax.text(x + 0.11, 0.77, title, ha="center", va="top", fontsize=9.2, fontweight="bold", color=border, linespacing=1.3, transform=ax.transAxes)
+    ax.text(x + 0.11, 0.25, text, ha="center", va="bottom", fontsize=8.2, color="#212121", linespacing=1.6, transform=ax.transAxes)
     if idx < 3:
         ax.annotate("", xy=(x + 0.245, 0.50), xytext=(x + 0.225, 0.50), xycoords="axes fraction",
                     arrowprops=dict(arrowstyle="->", lw=2.2, color="#424242"))
 
-plt.title(reshape_fa("شکل (۱): معماری چهارمرحله‌ای چارچوب HAMTA در کشف و اولویت‌بندی فرصت تراکنشی پذیرندگان"), fontsize=10.5, fontweight="bold", pad=10)
+plt.title("شکل (۱): معماری چهارمرحله‌ای چارچوب HAMTA در کشف و اولویت‌بندی فرصت تراکنشی پذیرندگان", fontsize=10.5, fontweight="bold", pad=12)
 plt.savefig(os.path.join(cfg.FIGURES_FA_DIR, "fig1_architecture_fa.png"), bbox_inches="tight")
 plt.close()
 
@@ -176,19 +173,29 @@ plt.savefig(os.path.join(cfg.FIGURES_DIR, "fig3_latent_tsne_comparison.png"), bb
 plt.close()
 
 # Fig 3 Persian
-fig, ax = plt.subplots(figsize=(6.8, 4.2), dpi=300)
-categories_fa = [reshape_fa("تراکنش واقعی"), reshape_fa("پیش‌بینی مدل"), reshape_fa("حد بالای طبیعی U"), reshape_fa("بنچ‌مارک همتایان B^G")]
-bars = ax.bar(categories_fa, values, color=bar_colors, width=0.55, edgecolor="black", linewidth=0.8)
+fig, ax = plt.subplots(figsize=(7.5, 4.4), dpi=300)
+categories_fa = [
+    "تراکنش\nواقعی",
+    "پیش‌بینی\nمدل",
+    "حد بالای طبیعی\n(U)",
+    "بنچ‌مارک همتایان\n(B^G)"
+]
+bars = ax.bar(range(4), values, color=bar_colors, width=0.52, edgecolor="black", linewidth=0.8)
+ax.set_xticks(range(4))
+ax.set_xticklabels(categories_fa, fontsize=9.2, linespacing=1.3)
 for bar in bars:
     yval = bar.get_height()
-    ax.text(bar.get_x() + bar.get_width()/2.0, yval + 2.5, f"{int(yval)}", ha='center', va='bottom', fontsize=9, fontweight="bold")
+    ax.text(bar.get_x() + bar.get_width()/2.0, yval + 2.5, f"{int(yval)}", ha='center', va='bottom', fontsize=9.5, fontweight="bold")
 
-ax.annotate("", xy=(3, 112), xytext=(3, 170), arrowprops=dict(arrowstyle="<->", color="#C62828", lw=2))
-ax.text(3.15, 141, f"{reshape_fa('شکاف عملکردی نسبت به همتایان')}\nΔ = 58 tx (34.1%)\nM-GATO = 0.307", color="#C62828", fontsize=8.8, fontweight="bold", va="center")
+ax.annotate("", xy=(3, 112), xytext=(3, 170), arrowprops=dict(arrowstyle="<->", color="#B71C1C", lw=2.2))
+text_str = "شکاف عملکردی نسبت به همتایان\nΔ = ۵۸ tx (۳۴٫۱٪)\nM-GATO = ۰٫۳۰۷"
+ax.text(3.38, 141, text_str, color="#B71C1C", fontsize=8.8, fontweight="bold", va="center", ha="left", linespacing=1.4,
+        bbox=dict(boxstyle="round,pad=0.5", facecolor="#FFEBEE", edgecolor="#EF5350", alpha=0.95, lw=1.2))
 
+ax.set_xlim(-0.6, 4.5)
 ax.set_ylim(0, 195)
-ax.set_ylabel(reshape_fa("تعداد تراکنش در دوره زمانی"), fontsize=9.5)
-ax.set_title(reshape_fa("شکل (۳): تصویر مفهومی محاسبه امتیاز M-GATO و شکاف ساختاری عملکرد"), fontsize=9.8, fontweight="bold")
+ax.set_ylabel("تعداد تراکنش در دوره زمانی", fontsize=9.5)
+ax.set_title("شکل (۳): تصویر مفهومی محاسبه امتیاز M-GATO و شکاف ساختاری عملکرد", fontsize=9.8, fontweight="bold", pad=10)
 plt.tight_layout()
 plt.savefig(os.path.join(cfg.FIGURES_FA_DIR, "fig3_guild_heatmap_fa.png"), bbox_inches="tight")
 plt.close()
@@ -219,7 +226,7 @@ colors_r = ["#CFD8DC", "#B0BEC5", "#90A4AE", "#42A5F5", "#1E88E5", "#1565C0"]
 b2 = ax2.bar(models_r, ndcg_r, yerr=ndcg_std, capsize=3, color=colors_r, edgecolor="black", linewidth=0.7)
 for b in b2:
     ax2.text(b.get_x() + b.get_width()/2.0, b.get_height() + 0.04, f"{b.get_height():.3f}", ha='center', va='bottom', fontsize=8.0, fontweight="bold")
-ax2.axhline(0.148, color="red", linestyle="--", linewidth=1.2, label="Random Guessing (0.148)")
+ax2.axhline(0.146, color="red", linestyle="--", linewidth=1.2, label="Random Guessing (0.146)")
 ax2.set_ylabel("NDCG@35", fontsize=9)
 ax2.set_title("(b) Campaign Targeting NDCG@35 (Higher is Better)", fontsize=9.5, fontweight="bold")
 ax2.set_ylim(0, 0.58)
@@ -231,14 +238,14 @@ plt.savefig(os.path.join(cfg.FIGURES_DIR, "fig5_benchmark_comparison_bar.png"), 
 plt.close()
 
 # Persian Fig 5
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.5, 4.0), dpi=300)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.5, 4.2), dpi=300)
 
 models_f_fa = ["Persistence", "Moving Avg", "ETS", "GBDT", "NB-GLM", "HAMTA"]
 b1 = ax1.bar(models_f_fa, mae_f, yerr=mae_std, capsize=3, color=colors_f, edgecolor="black", linewidth=0.7)
 for b in b1:
     ax1.text(b.get_x() + b.get_width()/2.0, b.get_height() + 0.45, f"{b.get_height():.2f}", ha='center', va='bottom', fontsize=8.0, fontweight="bold")
-ax1.set_ylabel(reshape_fa("خطای میانگین قدرمطلق (MAE)"), fontsize=9)
-ax1.set_title(reshape_fa("(الف) خطای پیش‌بینی تراکنش‌ها (کمتر بهتر است)"), fontsize=9.5, fontweight="bold")
+ax1.set_ylabel("خطای میانگین قدرمطلق (MAE)", fontsize=9.2)
+ax1.set_title("(الف) خطای پیش‌بینی تراکنش‌ها (کمتر بهتر است)", fontsize=9.5, fontweight="bold", pad=10)
 ax1.set_ylim(0, 6.0)
 ax1.tick_params(axis='x', rotation=25)
 
@@ -246,11 +253,11 @@ models_r_fa = ["Lowest Vol", "Pre-Vol", "Tabular Gap", "Static GNN", "SFA Fronti
 b2 = ax2.bar(models_r_fa, ndcg_r, yerr=ndcg_std, capsize=3, color=colors_r, edgecolor="black", linewidth=0.7)
 for b in b2:
     ax2.text(b.get_x() + b.get_width()/2.0, b.get_height() + 0.04, f"{b.get_height():.3f}", ha='center', va='bottom', fontsize=8.0, fontweight="bold")
-ax2.axhline(0.148, color="red", linestyle="--", linewidth=1.2, label=reshape_fa("انتخاب تصادفی (۰٫۱۴۸)"))
-ax2.set_ylabel("NDCG@35", fontsize=9)
-ax2.set_title(reshape_fa("(ب) کیفیت اولویت‌بندی کمپین (بیشتر بهتر است)"), fontsize=9.5, fontweight="bold")
+ax2.axhline(0.146, color="red", linestyle="--", linewidth=1.2, label="انتخاب تصادفی (۰٫۱۴۶)")
+ax2.set_ylabel("شاخص NDCG@35", fontsize=9.2)
+ax2.set_title("(ب) کیفیت اولویت‌بندی کمپین (بیشتر بهتر است)", fontsize=9.5, fontweight="bold", pad=10)
 ax2.set_ylim(0, 0.58)
-ax2.legend(loc="upper left", fontsize=8.0)
+ax2.legend(loc="upper left", fontsize=8.5)
 ax2.tick_params(axis='x', rotation=25)
 
 plt.tight_layout()

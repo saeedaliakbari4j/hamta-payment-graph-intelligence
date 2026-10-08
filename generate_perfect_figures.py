@@ -296,7 +296,7 @@ def make_fig4():
     cols = ["#B0BEC5", "#78909C", "#64B5F6", "#FFB74D", "#C62828"]
     mk = ["v", "s", "^", "D", "o"]
     ks = sorted(mb["Budget (K)"].unique())
-    prev = 52 / 350
+    prev = 51 / 350
 
     # English version
     fig, ax = plt.subplots(figsize=(COL_IN, 2.6))
@@ -312,7 +312,7 @@ def make_fig4():
     ax.tick_params(labelsize=8.0)
     ax.spines[["top", "right"]].set_visible(False)
     ax.set_ylabel("Precision@K (10 seeds)", fontsize=9.5, family=EN_FONT)
-    ax.text(len(ks) - 1 + 0.25, prev + 0.010, "random = 0.149", fontsize=8.0, ha="right", va="bottom", family=EN_FONT)
+    ax.text(len(ks) - 1 + 0.25, prev + 0.010, "random = 0.146", fontsize=8.0, ha="right", va="bottom", family=EN_FONT)
     ax.legend(fontsize=8.0, ncol=3, frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.25),
               prop={"family": EN_FONT, "size": 8.0})
     save(fig, os.path.join(FIG_EN, "fig4_radar_persona_profiles.png"))
@@ -330,8 +330,8 @@ def make_fig4():
     ax.set_ylim(0, 0.65)
     ax.tick_params(labelsize=8.0)
     ax.spines[["top", "right"]].set_visible(False)
-    ax.set_ylabel("دقت اولویت‌بندی Precision@K (۱۰ سید)", fontsize=9.5, family=FA_FONT)
-    ax.text(len(ks) - 1 + 0.25, prev + 0.012, "شانس تصادفی: 0.149", fontsize=8.0,
+    ax.set_ylabel("دقت اولویت‌بندی Precision@K (۱۰ بذر آزمایشی)", fontsize=9.5, family=FA_FONT)
+    ax.text(len(ks) - 1 + 0.25, prev + 0.012, "شانس تصادفی: 0.146", fontsize=8.0,
             ha="right", va="bottom", family=FA_FONT, color="#424242")
     ax.legend(ncol=3, frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.25),
               prop={"family": FA_FONT, "size": 8.0})
@@ -371,7 +371,7 @@ def make_fig5():
     c2 = ["#B0BEC5"] * (len(nd) - 1) + ["#C62828"]
     a2.bar(range(len(nd)), [m for m, _ in nd], yerr=[s for _, s in nd], color=c2, edgecolor="#263238",
            linewidth=0.6, capsize=2.5, error_kw=dict(elinewidth=0.8))
-    a2.axhline(52 / 350, ls="--", lw=0.9, color="#424242")
+    a2.axhline(51 / 350, ls="--", lw=0.9, color="#424242")
     a2.set_xticks(range(len(nd)))
     a2.set_xticklabels(rk_lab_en, fontsize=9.0, family=EN_FONT)
     a2.set_ylabel("NDCG@35 Ranking Quality", fontsize=9.0, family=EN_FONT)
@@ -394,7 +394,7 @@ def make_fig5():
 
     a2.bar(range(len(nd)), [m for m, _ in nd], yerr=[s for _, s in nd], color=c2, edgecolor="#263238",
            linewidth=0.6, capsize=2.5, error_kw=dict(elinewidth=0.8))
-    a2.axhline(52 / 350, ls="--", lw=0.9, color="#424242")
+    a2.axhline(51 / 350, ls="--", lw=0.9, color="#424242")
     a2.set_xticks(range(len(nd)))
     a2.set_xticklabels(rk_lab_fa, fontsize=9.0, family=FA_FONT)
     a2.set_ylabel("کیفیت رتبه‌بندی NDCG@35", fontsize=9.0, family=FA_FONT)
