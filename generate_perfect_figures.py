@@ -42,7 +42,7 @@ os.makedirs(FIG_FA, exist_ok=True)
 
 EN_FONT = "DejaVu Sans"
 FA_FONT = "Tahoma"
-COL_IN = 3.25           # single-column width in inches
+COL_IN = 6.5           # single-column width in inches
 DPI = 300
 
 _FA_DIG = str.maketrans("0123456789.", "۰۱۲۳۴۵۶۷۸۹٫")
@@ -111,13 +111,13 @@ def make_fig1():
     colors = [("#FFFFFF", "#000000"), ("#FFFFFF", "#000000"), ("#FFFFFF", "#000000"), ("#FFFFFF", "#000000")]
     fig, ax = plt.subplots(figsize=(COL_IN, 1.75))
     ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
-    w, gap = 0.225, 0.035
+    w, gap = 0.22, 0.04
     for i, ((t, s), (bg, bd)) in enumerate(zip(steps_en, colors)):
         x = 0.005 + i * (w + gap)
         ax.add_patch(mpatches.FancyBboxPatch((x, 0.06), w, 0.88, boxstyle="square,pad=0.02",
                                              facecolor=bg, edgecolor=bd, linewidth=1.0))
-        ax.text(x + w / 2, 0.72, t, ha="center", va="center", fontsize=6.2, fontweight="bold", color=bd, family=EN_FONT)
-        ax.text(x + w / 2, 0.28, s, ha="center", va="center", fontsize=5.6, color="#263238", family=EN_FONT, linespacing=1.25)
+        ax.text(x + w / 2, 0.72, t, ha="center", va="center", fontsize=8.5, fontweight="bold", color=bd, family=EN_FONT)
+        ax.text(x + w / 2, 0.28, s, ha="center", va="center", fontsize=7.5, color="#263238", family=EN_FONT, linespacing=1.25)
         if i < 3:
             ax.annotate("", xy=(x + w + gap - 0.002, 0.5), xytext=(x + w + 0.002, 0.5),
                         arrowprops=dict(arrowstyle="-|>", lw=1.0, color="#455A64", mutation_scale=8))
@@ -138,7 +138,7 @@ def make_fig1():
         ax.add_patch(mpatches.FancyBboxPatch((0.02, y), 0.96, h, boxstyle="square,pad=0.02",
                                              facecolor=bg, edgecolor=bd, linewidth=1.0))
         ax.text(0.5, y + h * 0.66, fa_text(t), ha="center", va="center", fontsize=8.2, fontweight="bold", color=bd, family=FA_FONT)
-        ax.text(0.5, y + h * 0.28, fa_text(s), ha="center", va="center", fontsize=7.2, color="#263238", family=FA_FONT)
+        ax.text(0.5, y + h * 0.28, fa_text(s), ha="center", va="center", fontsize=10.0, color="#263238", family=FA_FONT)
         if i < 3:
             ax.annotate("", xy=(0.5, y - gap + 0.004), xytext=(0.5, y - 0.004),
                         arrowprops=dict(arrowstyle="-|>", lw=1.0, color="#455A64", mutation_scale=8))
@@ -194,7 +194,7 @@ def make_fig2():
         handles.append(Line2D([0], [0], marker="o", ls="", markersize=6.5, markerfacecolor="none",
                               markeredgecolor="#C62828", markeredgewidth=1.2, label=inj_lab))
         leg = ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.01), ncol=3, frameon=False,
-                        fontsize=6.6, handletextpad=0.3, columnspacing=0.8,
+                        fontsize=9.0, handletextpad=0.3, columnspacing=0.8,
                         prop={"family": EN_FONT if lang == "en" else FA_FONT, "size": 6.6})
         fname = os.path.join(FIG_EN, "fig2_graph_topology_communities.png") if lang == "en" \
             else os.path.join(FIG_FA, "fig2_topology_fa.png")
@@ -230,7 +230,7 @@ def make_fig3():
         for b, v in zip(bars, vals):
             s = f"{v:.1f}" if lang == "en" else fdig(f"{v:.1f}")
             ax.text(b.get_x() + b.get_width() / 2, v + top * 0.018, fa_text(s) if lang=="fa" else s, ha="center", va="bottom",
-                    fontsize=7.2, fontweight="bold", family=fam)
+                    fontsize=10.0, fontweight="bold", family=fam)
         ax.annotate("", xy=(3.38, ub), xytext=(3.38, pb),
                     arrowprops=dict(arrowstyle="<->", color="#B71C1C", lw=1.1))
         ax.plot([2, 3.38], [ub] * 2, ls=":", lw=0.9, color="#00695C")
@@ -240,20 +240,20 @@ def make_fig3():
             note = (f"شکاف بالای U = {fdig(f'{gap_abs:.1f}')}\nشکاف نسبی = {fdig(f'{rel:.3f}')}\n"
                     f"Q = {fdig(f'{q_val:.2f}')}\nM-GATO = {fdig(f'{mgato_val:.3f}')}")
         ax.text(0.03, 0.96, fa_text(note) if lang=="fa" else note, transform=ax.transAxes, ha="left", va="top",
-                fontsize=6.8, color="#B71C1C", family=fam, linespacing=1.25,
+                fontsize=9.5, color="#B71C1C", family=fam, linespacing=1.25,
                 bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="#EF9A9A", lw=0.6))
         ax.set_xticks(range(4))
-        ax.set_xticklabels([fa_text(c) if lang=="fa" else c for c in cats], fontsize=7.2, fontweight="bold", family=fam)
+        ax.set_xticklabels([fa_text(c) if lang=="fa" else c for c in cats], fontsize=10.0, fontweight="bold", family=fam)
         ax.set_xlim(-0.5, 3.65)
         ax.set_ylim(0, top)
         ax.tick_params(axis="y", labelsize=6.8)
         ax.spines[["top", "right"]].set_visible(False)
         if lang == "en":
-            ax.set_ylabel("Transactions (test period)", fontsize=7.2, family=fam)
+            ax.set_ylabel("Transactions (test period)", fontsize=10.0, family=fam)
             save(fig, os.path.join(FIG_EN, "fig3_latent_tsne_comparison.png"))
         else:
             fa_ticks(ax)
-            ax.set_ylabel(fa_text("تعداد تراکنش دوره آزمون"), fontsize=7.2, family=fam)
+            ax.set_ylabel(fa_text("تعداد تراکنش دوره آزمون"), fontsize=10.0, family=fam)
             save(fig, os.path.join(FIG_FA, "fig3_guild_heatmap_fa.png"))
 
 
@@ -284,16 +284,16 @@ def make_fig4():
         ax.tick_params(labelsize=6.8)
         ax.spines[["top", "right"]].set_visible(False)
         if lang == "en":
-            ax.set_xticklabels([f"K={k}" for k in ks], family=EN_FONT, fontsize=7.0)
-            ax.set_ylabel("Precision@K (10 seeds)", fontsize=7.2, family=EN_FONT)
-            ax.text(len(ks) - 1 + 0.25, prev + 0.008, "random = 0.149", fontsize=6.2, ha="right", va="bottom", family=EN_FONT)
-            ax.legend(fontsize=6.2, ncol=3, frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.22),
+            ax.set_xticklabels([f"K={k}" for k in ks], family=EN_FONT, fontsize=9.5)
+            ax.set_ylabel("Precision@K (10 seeds)", fontsize=10.0, family=EN_FONT)
+            ax.text(len(ks) - 1 + 0.25, prev + 0.008, "random = 0.149", fontsize=8.5, ha="right", va="bottom", family=EN_FONT)
+            ax.legend(fontsize=8.5, ncol=3, frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.22),
                       prop={"family": EN_FONT, "size": 6.2})
             save(fig, os.path.join(FIG_EN, "fig4_radar_persona_profiles.png"))
         else:
-            ax.set_xticklabels([fa_text(f"K = {fdig(k)}") for k in ks], family=FA_FONT, fontsize=7.0)
+            ax.set_xticklabels([fa_text(f"K = {fdig(k)}") for k in ks], family=FA_FONT, fontsize=9.5)
             fa_ticks(ax, fmt="{:.1f}")
-            ax.set_ylabel(fa_text("Precision@K (۱۰ سید)"), fontsize=7.2, family=FA_FONT)
+            ax.set_ylabel(fa_text("Precision@K (۱۰ سید)"), fontsize=10.0, family=FA_FONT)
             ax.text(len(ks) - 1 + 0.25, prev + 0.008, fa_text(f"تصادفی = {fdig('0.149')}"), fontsize=6.4, ha="right",
                     va="bottom", family=FA_FONT)
             ax.legend(ncol=3, frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.22),
@@ -327,19 +327,19 @@ def make_fig5():
         a1.bar(range(len(mae)), [m for m, _ in mae], yerr=[s for _, s in mae], color=c1, edgecolor="#263238",
                linewidth=0.5, capsize=2.0, error_kw=dict(elinewidth=0.7))
         a1.set_xticks(range(len(mae)))
-        a1.set_xticklabels(fc_lab_en if lang == "en" else [fa_text(x) for x in fc_lab_fa], fontsize=6.8, family=fam)
+        a1.set_xticklabels(fc_lab_en if lang == "en" else [fa_text(x) for x in fc_lab_fa], fontsize=9.5, family=fam)
         c2 = ["#B0BEC5"] * (len(nd) - 1) + ["#C62828"]
         a2.bar(range(len(nd)), [m for m, _ in nd], yerr=[s for _, s in nd], color=c2, edgecolor="#263238",
                linewidth=0.5, capsize=2.0, error_kw=dict(elinewidth=0.7))
         a2.axhline(52 / 350, ls="--", lw=0.8, color="#424242")
         a2.set_xticks(range(len(nd)))
-        a2.set_xticklabels(rk_lab_en if lang == "en" else [fa_text(x) for x in rk_lab_fa], fontsize=6.6, family=fam)
+        a2.set_xticklabels(rk_lab_en if lang == "en" else [fa_text(x) for x in rk_lab_fa], fontsize=9.0, family=fam)
         for a in (a1, a2):
             a.tick_params(axis="y", labelsize=6.8)
             a.spines[["top", "right"]].set_visible(False)
         if lang == "en":
-            a1.set_title("(a) Forecasting MAE (lower is better)", fontsize=7.6, fontweight="bold", family=fam)
-            a2.set_title("(b) Opportunity ranking NDCG@35 (higher is better)", fontsize=7.6, fontweight="bold", family=fam)
+            a1.set_title("(a) Forecasting MAE (lower is better)", fontsize=10.5, fontweight="bold", family=fam)
+            a2.set_title("(b) Opportunity ranking NDCG@35 (higher is better)", fontsize=10.5, fontweight="bold", family=fam)
             fig.tight_layout(h_pad=1.4)
             save(fig, os.path.join(FIG_EN, "fig5_benchmark_comparison_bar.png"))
         else:
