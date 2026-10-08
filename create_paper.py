@@ -484,8 +484,8 @@ def build_word_document():
     add_para(
         "Opportunity Ground-Truth Formalization: In observational payments, commercial growth capacity cannot be directly measured without counterfactual marketing trials. "
         "Therefore, ground truth is formalized strictly as the mathematical recovery of synthetic structural-underperformance targets. "
-        "A merchant is labeled Opportunity(m) = 1 iff an exogenous underperformance drop d > 0 was synthetically injected into its transaction generation rate starting in Test Period 5. "
-        "Exactly 52 out of 350 merchants (~14.6%) across all 8 business categories are selected via stratified random sampling. Target-peer overlap is low: on average only 11.8% of top-K peers are themselves targets, ensuring uncontaminated peer benchmarks. "
+        "A merchant is labeled Opportunity(m) = 1 iff an exogenous underperformance drop d > 0 was synthetically injected into its transaction generation rate emerging in monitoring Period 4 and persisting into test Period 5. "
+        "Exactly 51 out of 350 merchants (~14.6%) across all 8 business categories are selected via stratified random sampling from candidates with active peer baselines. Target-peer overlap is low: on average only 11.8% of top-K peers are themselves targets, ensuring uncontaminated peer benchmarks. "
         "Injected drop magnitudes span Scenario A (d = 0.18, noise σ = 3.0), Scenario B (d = 0.32, noise σ = 1.8), and Scenario C (d = 0.48, noise σ = 0.9). "
         "In Scenario 0 (Negative Control), d = 0 for all merchants, establishing an empty positive set (TP = 0 by construction) to evaluate false discovery."
     )
@@ -962,7 +962,8 @@ def build_word_document():
         "Threats to Validity: (1) Peer Cannibalization: the framework assumes independent customer demand; localized competitive cannibalization between neighboring POS terminals is not explicitly modeled. "
         "(2) Omitted Covariates: observational ledgers are restricted to 5 transaction fields; unobserved attributes (store area, operating hours, staffing) may confound natural performance capacity. "
         "(3) Synthetic Benchmark: while synthetic generation enables controlled ground-truth benchmarking across 10 seeds, production PSP environments exhibit greater non-stationary macroeconomic drift. "
-        "(4) Absence of Treatment Labels: M-GATO prioritizes observational opportunity rather than estimating causal uplift; active A/B marketing trials are required to measure causal return on investment."
+        "(4) Absence of Treatment Labels: M-GATO prioritizes observational opportunity rather than estimating causal uplift; active A/B marketing trials are required to measure causal return on investment. "
+        "(5) Nature of Opportunity Ground-Truth: HAMTA formalizes opportunity prioritization under Protocol A (Persistent Structural Underperformance Recovery), where downward performance divergence emerges during the monitoring period (Period 4) and continues into the campaign decision window (Period 5). The model detects underperformance exhibiting temporal continuity against peer capability baselines. Under Protocol B (Pure Ex-Ante Shocks), where an unobserved merchant suffers a sudden drop strictly in the future with zero historical precursor, no causal model conditioned purely on historical transactions can predict targets above random chance (14.6%) without covariate leading indicators."
     )
     add_para(
         "Computational Scalability: Profiling across three graph configurations shows approximately linear empirical scaling over the tested configurations across evaluated benchmark ranges (Intel Core i7, 8 cores, 16 GB RAM, PyTorch 2.4, 5 warm-up passes, 10-repetition mean): "
