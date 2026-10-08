@@ -1054,4 +1054,5 @@ def export_doc_pdf():
 
 if __name__ == "__main__":
     build()
-    export_doc_pdf()
+    print("Done building docx")
+    # export_doc_pdf()
