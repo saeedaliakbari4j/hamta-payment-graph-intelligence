@@ -763,7 +763,7 @@ def build_word_document():
         p_s = str(row["Precision@35"]).replace(" ", "\u00A0")
         ndcg_s = str(row["NDCG@35"]).replace(" ", "\u00A0")
         fpr_s = str(row.get("Weak-Support %", row.get("FPR@35", 0))).replace(" ", "\u00A0")
-        cov_s = str(row["Coverage (%)"]).replace(" ", "\u00A0")
+        cov_s = str(row.get("Coverage (%)", row.get("Coverage", 0.0))).replace(" ", "\u00A0")
 
         vals = [s_name, drop_s, p_s, ndcg_s, fpr_s, cov_s]
         for ci, val in enumerate(vals):
@@ -844,8 +844,8 @@ def build_word_document():
         a_name = short_ab_names[ri - 1] if ri - 1 < len(short_ab_names) else str(row["Architecture Variant"])[:18]
         ndcg_s = str(row["NDCG_disp"]).replace(" ", "\u00A0") if "NDCG_disp" in row else f"{row['NDCG@35']:.3f}"
         p_s = str(row["Prec_disp"]).replace(" ", "\u00A0") if "Prec_disp" in row else f"{row['Precision@35']:.3f}"
-        delta_s = f"{row['Delta_NDCG']:+.3f}"
-        raw_sig = str(row["Significance"]).strip()
+        delta_s = f"{row.get('Delta_NDCG', row.get('Delta NDCG', 0.0)):+.3f}"
+        raw_sig = str(row.get("Significance", row.get("Significance (Wilcoxon/t)", ""))).strip()
         sig_s = sig_clean.get(raw_sig, raw_sig[:12])
 
         vals = [a_name, ndcg_s, p_s, delta_s, sig_s]

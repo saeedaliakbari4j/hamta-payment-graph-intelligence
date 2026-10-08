@@ -112,16 +112,42 @@ def set_run_font_size(run, size_pt):
         el.set(qn("w:val"), sz_val)
 
 
-def _emit(par, text, latin, **kw):
+STYLE_FONT_SIZES = {
+    "Title": (14.0, 15.0),
+    "Author": (8.5, 9.5),
+    "Heading 0": (9.5, 10.5),
+    "Abstract": (8.5, 9.0),
+    "Abstract2": (8.5, 9.0),
+    "Heading 1": (10.0, 11.5),
+    "Heading 2": (9.0, 10.0),
+    "Heading 3": (8.5, 9.5),
+    "Text": (8.5, 9.0),
+    "Text1": (8.5, 9.0),
+    "Figure Caption": (8.0, 8.5),
+    "Caption": (8.0, 8.5),
+    "Figure Text": (7.0, 7.5),
+    "Table Text": (7.0, 7.5),
+    "REF": (6.5, 7.0),
+    "EN_REF": (6.5, 7.0),
+}
+
+
+def _emit(par, text, latin, style=None, **kw):
     if not text:
         return
     r = par.add_run(text)
     _set_fonts(r, latin)
     _style_run(r, **kw)
+    if style is None and par.style:
+        style = par.style.name
+    en_sz, fa_sz = STYLE_FONT_SIZES.get(style, (8.5, 9.0))
+    set_run_font_size(r, en_sz if latin else fa_sz)
 
 
-def add_text(par, text, bold=False, italic=False):
+def add_text(par, text, bold=False, italic=False, style=None):
     """Persian runs (rtl, complex-script font) + Latin runs (Times New Roman, LTR)."""
+    if style is None and par.style:
+        style = par.style.name
     pos = 0
     for m in TOKEN.finditer(text):
         s, e = m.span()
@@ -129,16 +155,16 @@ def add_text(par, text, bold=False, italic=False):
             while text[s:e] and text[e - 1] in ".-":
                 e -= 1
         if s > pos:
-            _emit(par, text[pos:s], False, bold=bold, italic=italic)
+            _emit(par, text[pos:s], False, style=style, bold=bold, italic=italic)
         if m.group("sub"):
             base, sub = m.group("sub")[0], m.group("sub")[3:-1]
-            _emit(par, base, True, bold=bold, italic=True)
-            _emit(par, sub, True, bold=bold, sub=True)
+            _emit(par, base, True, style=style, bold=bold, italic=True)
+            _emit(par, sub, True, style=style, bold=bold, sub=True)
         else:
-            _emit(par, text[s:e], True, bold=bold, italic=italic)
+            _emit(par, text[s:e], True, style=style, bold=bold, italic=italic)
         pos = e
     if pos < len(text):
-        _emit(par, text[pos:], False, bold=bold, italic=italic)
+        _emit(par, text[pos:], False, style=style, bold=bold, italic=italic)
 
 
 # ----------------------------------------------------------------------------- document helpers
@@ -158,19 +184,26 @@ class Builder:
         for np in ppr.findall(qn("w:numPr")):
             ppr.remove(np)
         if text:
-            add_text(p, text, bold=bold, italic=italic)
+            add_text(p, text, bold=bold, italic=italic, style=style)
         if keep_next:
             p.paragraph_format.keep_with_next = True
         if style in ("Text", "Text1"):
             p.paragraph_format.space_before = Pt(0)
             p.paragraph_format.space_after = Pt(1.0)
             p.paragraph_format.line_spacing = 0.94
+        elif style in ("Abstract", "Abstract2"):
+            p.paragraph_format.space_before = Pt(0.5)
+            p.paragraph_format.space_after = Pt(1.5)
+            p.paragraph_format.line_spacing = 0.94
+        elif style == "Heading 0":
+            p.paragraph_format.space_before = Pt(2.0)
+            p.paragraph_format.space_after = Pt(1.0)
         elif style == "Heading 1":
-            p.paragraph_format.space_before = Pt(1.5)
-            p.paragraph_format.space_after = Pt(0.3)
+            p.paragraph_format.space_before = Pt(2.5)
+            p.paragraph_format.space_after = Pt(0.8)
         elif style == "Heading 2":
-            p.paragraph_format.space_before = Pt(1.0)
-            p.paragraph_format.space_after = Pt(0.2)
+            p.paragraph_format.space_before = Pt(1.5)
+            p.paragraph_format.space_after = Pt(0.5)
         self._place(p)
         return p
 
@@ -401,6 +434,16 @@ def apply_mitra_styling(doc):
                 rf.set(qn("w:ascii"), "Times New Roman")
                 rf.set(qn("w:hAnsi"), "Times New Roman")
                 rf.set(qn("w:cs"), "B Mitra")
+                sz = rPr.find(qn("w:sz"))
+                if sz is None:
+                    sz = OxmlElement("w:sz")
+                    rPr.append(sz)
+                sz.set(qn("w:val"), "17")
+                szCs = rPr.find(qn("w:szCs"))
+                if szCs is None:
+                    szCs = OxmlElement("w:szCs")
+                    rPr.append(szCs)
+                szCs.set(qn("w:val"), "18")
                 lang = rPr.find(qn("w:lang"))
                 if lang is None:
                     lang = OxmlElement("w:lang")
@@ -420,53 +463,54 @@ def apply_mitra_styling(doc):
             if rf is None:
                 rf = OxmlElement("w:rFonts")
                 rPr.insert(0, rf)
+            rf.set(qn("w:ascii"), "Times New Roman")
+            rf.set(qn("w:hAnsi"), "Times New Roman")
             rf.set(qn("w:cs"), "B Mitra")
-            if s.name in ("Normal", "Text", "Text1", "Abstract", "Abstract2", "Author", "Title",
-                          "Heading 0", "Heading 1", "Heading 2", "Heading 3", "Bulleted Text",
-                          "Figure Caption", "Caption", "Equation", "REF", "Figure Text"):
-                rf.set(qn("w:ascii"), "Times New Roman")
-                rf.set(qn("w:hAnsi"), "Times New Roman")
-                rf.set(qn("w:cs"), "B Mitra")
+
+            en_sz, fa_sz = STYLE_FONT_SIZES.get(s.name, (8.5, 9.0))
+            sz = rPr.find(qn("w:sz"))
+            if sz is None:
+                sz = OxmlElement("w:sz")
+                rPr.append(sz)
+            sz.set(qn("w:val"), str(int(en_sz * 2)))
+
+            szCs = rPr.find(qn("w:szCs"))
+            if szCs is None:
+                szCs = OxmlElement("w:szCs")
+                rPr.append(szCs)
+            szCs.set(qn("w:val"), str(int(fa_sz * 2)))
+
             if s.name == "Title":
-                s.font.size = Pt(13.0)
                 s.paragraph_format.space_before = Pt(2.0)
                 s.paragraph_format.space_after = Pt(1.5)
             elif s.name == "Author":
-                s.font.size = Pt(8.5)
                 s.paragraph_format.space_before = Pt(0.5)
                 s.paragraph_format.space_after = Pt(0.5)
             elif s.name == "Heading 0":
-                s.font.size = Pt(8.0)
-                s.paragraph_format.space_before = Pt(1.0)
-                s.paragraph_format.space_after = Pt(0.2)
+                s.paragraph_format.space_before = Pt(2.0)
+                s.paragraph_format.space_after = Pt(1.0)
             elif s.name in ("Text", "Text1"):
-                s.font.size = Pt(7.7)
                 s.paragraph_format.line_spacing = 0.94
-                s.paragraph_format.space_after = Pt(0.12)
+                s.paragraph_format.space_after = Pt(1.0)
             elif s.name in ("Abstract", "Abstract2"):
-                s.font.size = Pt(7.5)
-                s.paragraph_format.line_spacing = 0.92
-                s.paragraph_format.space_after = Pt(0.2)
+                s.paragraph_format.line_spacing = 0.94
+                s.paragraph_format.space_before = Pt(0.5)
+                s.paragraph_format.space_after = Pt(1.5)
             elif s.name == "Heading 1":
-                s.font.size = Pt(8.2)
-                s.paragraph_format.space_before = Pt(1.4)
-                s.paragraph_format.space_after = Pt(0.28)
+                s.paragraph_format.space_before = Pt(2.5)
+                s.paragraph_format.space_after = Pt(0.8)
             elif s.name == "Heading 2":
-                s.font.size = Pt(7.7)
-                s.paragraph_format.space_before = Pt(0.9)
-                s.paragraph_format.space_after = Pt(0.22)
+                s.paragraph_format.space_before = Pt(1.5)
+                s.paragraph_format.space_after = Pt(0.5)
             elif s.name in ("Figure Text", "Table Text"):
-                s.font.size = Pt(6.8)
                 s.paragraph_format.line_spacing = 0.88
                 s.paragraph_format.space_before = Pt(0.1)
                 s.paragraph_format.space_after = Pt(0.1)
             elif s.name in ("Figure Caption", "Caption"):
-                s.font.size = Pt(7.6)
                 s.paragraph_format.line_spacing = 0.90
                 s.paragraph_format.space_before = Pt(0.3)
                 s.paragraph_format.space_after = Pt(0.4)
             elif s.name == "REF":
-                s.font.size = Pt(5.6)
                 s.paragraph_format.line_spacing = 0.84
                 s.paragraph_format.space_after = Pt(0.0)
         except Exception:
@@ -511,9 +555,9 @@ def build():
 
     p = B.para("Author")
     add_text(p, "سعید علی اکبری")
-    r = p.add_run("۱*"); _set_fonts(r, False); _style_run(r, sup=True)
+    r = p.add_run("۱*"); _set_fonts(r, False); _style_run(r, sup=True); set_run_font_size(r, 9.5)
     add_text(p, "، سعید شاهسون")
-    r = p.add_run("۲"); _set_fonts(r, False); _style_run(r, sup=True)
+    r = p.add_run("۲"); _set_fonts(r, False); _style_run(r, sup=True); set_run_font_size(r, 9.5)
 
     p_aff1 = B.para("Author", "۱ کارشناس هوش تجاری، شرکت رایامیت، تهران، ایران (نویسنده مسئول)")
     p_aff1.paragraph_format.space_before = Pt(1.0)
@@ -529,7 +573,7 @@ def build():
     r1 = p_em1.add_run("saeed.aliakbari@rayamate.ir")
     _set_fonts(r1, True)
     r1.font.name = "Times New Roman"
-    r1.font.size = Pt(8.5)
+    set_run_font_size(r1, 8.5)
 
     p_aff2 = B.para("Author", "۲ معمار نرم‌افزار، شرکت رایامیت، تهران، ایران")
     p_aff2.paragraph_format.space_before = Pt(0.5)
@@ -545,7 +589,7 @@ def build():
     r2 = p_em2.add_run("saeed.shahsavan@rayamate.ir")
     _set_fonts(r2, True)
     r2.font.name = "Times New Roman"
-    r2.font.size = Pt(8.5)
+    set_run_font_size(r2, 8.5)
 
     B.para("Heading 0", "چکیده")
     B.para("Abstract",
@@ -557,7 +601,7 @@ def build():
            "کران بالای عملکرد و بنچ‌مارک همتایان تخمین زده شده و شاخص M-GATO جهت اولویت‌بندی کمپین محاسبه می‌گردد. "
            f"ارزیابی تجربی بر روی {to_fa_num('35000')} تراکنش شبیه‌سازی‌شده طی {to_fa_num('10')} سید تصادفی نشان می‌دهد HAMTA با ثبت خطای میانگین {to_fa_num('4.48')} تراکنش و "
            f"دقت رتبه‌بندی {to_fa_num('36.6')} درصد، به بهبود {to_fa_num('2.51')} برابری نسبت به شانس تصادفی دست یافته و زیرساختی عملیاتی و بدون برچسب مداخله برای هوشمندی سبد پذیرندگان فراهم می‌سازد.")
-    B.para("Heading 0", "چارچوب HAMTA تنها یک مدل یادگیری ماشین نیست، بلکه یک مؤلفه تصمیم‌یار (Decision-support component) در معماری مدیریت پذیرندگان است. این معماری از جریان داده‌های تراکنشی آغاز شده، در لایه هوشمندی گراف پردازش می‌گردد و توسط موتور تصمیم‌گیری M-GATO به واحد بازاریابی جهت اجرای کمپین و دریافت بازخورد سازمانی متصل می‌شود.")
+    B.para("Abstract2", "چارچوب HAMTA تنها یک مدل یادگیری ماشین نیست، بلکه یک مؤلفه تصمیم‌یار (Decision-support component) در معماری مدیریت پذیرندگان است. این معماری از جریان داده‌های تراکنشی آغاز شده، در لایه هوشمندی گراف پردازش می‌گردد و توسط موتور تصمیم‌گیری M-GATO به واحد بازاریابی جهت اجرای کمپین و دریافت بازخورد سازمانی متصل می‌شود.")
 
     B.para("Heading 0", "کلمات کلیدی")
     B.para("Abstract",
@@ -608,7 +652,7 @@ def build():
     B.para("Heading 2", "2.4. تخمین نااطمینانی و واسنجی بازه پیش‌بینی")
     B.para("Text1",
            "پیش‌بینی‌های نقطه‌ای قادر به تفکیک نوسانات تصادفی طبیعی از افت معنادار عملکرد نیستند. روش‌های واسنجی بازه پیش‌بینی تجربی [8] و پژوهش‌های نااطمینانی پیش‌بینی بر روی گراف‌های زمانی [23] "
-           "با سنجش توزیع خطاهای پسماند در پنجره‌های گذشته، کران‌های بازه‌ای کالیبره‌شده بنابراین واسنجی بازه پیش‌بینی یک‌طرفه زمانی (One-sided temporal prediction-interval calibration) به صورت تجربی صورت می‌گیرد.")
+           "با سنجش توزیع خطاهای پسماند در پنجره‌های گذشته، کران‌های بازه‌ای واسنجی‌شده را استخراج می‌نمایند؛ لذا در HAMTA واسنجی بازه پیش‌بینی یک‌طرفه زمانی (One-sided temporal prediction-interval calibration) به صورت تجربی صورت می‌گیرد.")
     B.para("Heading 2", "2.5. تحلیل مرز تصادفی و مدل‌های داده‌های شمارشی")
     B.para("Text1",
            "در ادبیات اقتصادسنجی، تحلیل مرز تصادفی (SFA) کارایی نسبی بنگاه‌ها را نسبت به مرز بهترین عملکرد تجربی برآورد می‌نماید [24]. "
@@ -630,7 +674,7 @@ def build():
            "(۵ تا ۷) شاخص‌های مقیاس مالی استخراج‌شده از مبلغ تراکنش شامل لگاریتم حجم کل، میانگین مبلغ و انحراف معیار مبلغ؛ "
            "(۸) وسعت تعاملات مشتریان یکتا (تعداد کارت‌های متمایز پوشش‌داده‌شده)؛ و "
            "(۹ تا ۱۶) بردار وان‌هات نشانگر صنف اقتصادی در میان ۸ صنف تجاری. "
-           "مسیر وابستگی ویژگی‌ها اکیداً علّی است: ۵ فیلد پایه دفتر کل → ساخت گراف همتایان تاریخی گراف‌های تاریخی → تجمیع وقفه همتایان → شبکه عصبی گراف زمانی در زمان t، که از نشت اطلاعات آینده ممانعت می‌کند. "
+           "مسیر وابستگی ویژگی‌ها اکیداً علّی است: ۵ فیلد پایه دفتر کل → ساخت گراف همتایان تاریخی → تجمیع وقفه همتایان → شبکه عصبی گراف زمانی در زمان t، که از نشت اطلاعات آینده ممانعت می‌کند. "
            "هدف مسئله در سطح هر پذیرنده m ∈ M، پیش‌بینی تعداد تراکنش دوره آتی Y_{m, t+1} ∈ ℕ_0 و تعیین شکاف فرصت ساختاری آن نسبت به بنچ‌مارک محافظه‌کارانه همتایان B^G_{m, t+1} است.")
 
     B.para("Heading 2", "3.2. گراف دوبخشی زمانی کارت–پذیرنده")
@@ -697,7 +741,7 @@ def build():
     B.para("Text1",
            f"مثال عددی: پذیرنده MERCH_00322 در صنف مسافرتی را در نظر بگیرید: عملکرد فعلی Y = {to_fa_num('100')}، پیش‌بینی مدل μ̂ = {to_fa_num('105.0')}، و کران بالای کالیبره‌شده U = {to_fa_num('112.0')} تراکنش است. "
            f"همتایان این پذیرنده به بنچ‌مارک محافظه‌کارانه B^G = {to_fa_num('170.0')} دست یافته‌اند و ضریب اتکای گرافی Q = {to_fa_num('0.90')} است. "
-           f"بنابراین شکاف کران-پیش‌بینی همتایان برابر {to_fa_num('58.0')} = {to_fa_num('112.0')} - {to_fa_num('170.0')} (شکاف نسبی {to_fa_num('0.3412')}) بوده و امتیاز M-GATO برابر {to_fa_num('0.307')} = {to_fa_num('0.3412')} × {to_fa_num('0.90')} محاسبه می‌شود. "
+           f"بنابراین شکاف کران-پیش‌بینی همتایان معادل B^G - U = {to_fa_num('170.0')} - {to_fa_num('112.0')} = {to_fa_num('58.0')} (شکاف نسبی {to_fa_num('0.3412')}) بوده و امتیاز M-GATO برابر {to_fa_num('0.307')} = {to_fa_num('0.3412')} × {to_fa_num('0.90')} محاسبه می‌شود. "
            f"تفسیر دقیق: این پذیرنده واجد {to_fa_num('58')} تراکنش شکاف کران-پیش‌بینی نسبت به سقف طبیعی خود تا بنچ‌مارک همتایان است (در حالی که تفاوت با عملکرد فعلی ۷۰ تراکنش است).")
     B.picture(os.path.join(FIG, "fig3_guild_heatmap_fa.png"))
     B.caption("شکل (3) : مقایسه مؤلفه‌های شاخص M-GATO: تراکنش مشاهده‌شده، پیش‌بینی مدل، کران بالای طبیعی و بنچ‌مارک همتایان")
@@ -786,7 +830,7 @@ def build():
     B.caption("شکل (4) : مقایسه کمی مدل‌ها در (الف) دقت پیش‌بینی و (ب) کیفیت اولویت‌بندی کمپین در ۱۰ سید تصادفی")
 
     B.para("Text1",
-           f"با توجه به شیوع فرصت‌های واقعی در سطح ۵۲ پذیرنده از ۳۵۰ پذیرنده (شانس تصادفی معادل {to_fa_num('0.146')} یا ۱۴٫۶٪)، نتایج جدول (2) نشان می‌دهد که "
+           f"با توجه به شیوع فرصت‌های واقعی در سطح {to_fa_num('51')} پذیرنده از ۳۵۰ پذیرنده (شانس تصادفی معادل {to_fa_num('0.146')} یا {to_fa_num('14.6')}٪)، نتایج جدول (2) نشان می‌دهد که "
            f"مدل پیشنهادی HAMTA با Precision@35 معادل {to_fa_num('0.366 ± 0.120')}، NDCG@35 معادل {to_fa_num('0.382 ± 0.116')} و R-Precision معادل {to_fa_num('0.342 ± 0.077')}، "
            f"به ضریب برتری {to_fa_num('2.51')} برابری نسبت به انتخاب تصادفی دست می‌یابد.")
 
