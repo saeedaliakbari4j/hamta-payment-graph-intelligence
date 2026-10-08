@@ -27,7 +27,7 @@ from src.config import cfg
 sys.stdout.reconfigure(encoding="utf-8")
 
 BASE = cfg.BASE_DIR
-FIG = os.path.join(BASE, "figures")
+FIG = os.path.join(BASE, "figures_fa")
 TEMPLATE_DOCX = os.path.join(BASE, "template_fa.docx")
 OUT_DOCX = os.path.join(BASE, "FA_From_Transactional_Data_to_Organizational_Intelligence.docx")
 OUT_DOC = OUT_DOCX.replace(".docx", ".doc")
@@ -618,7 +618,7 @@ def build():
     B.para("Heading 1", "3. روش پیشنهادی (چارچوب معماری HAMTA)")
     B.para("Text1",
            "معماری HAMTA شامل جریان پیوسته‌ای از مراحل پردازش است: ساخت گراف دوبخشی، القای گراف همتایان، پیش‌بینی گراف زمانی، واسنجی نااطمینانی، و محاسبه امتیاز M-GATO (شکل (1)).")
-    B.picture(os.path.join(FIG, "fig1_framework_architecture.png"))
+    B.picture(os.path.join(FIG, "fig1_architecture_fa.png"))
     B.caption("شکل (1) : خط لوله معماری چارچوب HAMTA برای کشف فرصت تراکنشی پذیرندگان")
 
     B.para("Heading 2", "3.1. تعریف مسئله و ساختار داده")
@@ -655,7 +655,7 @@ def build():
     B.equation([("w̃", ""), ("mj", "sub"), (" ∝ w", ""), ("mj", "sub"), (" · ( 1 + η · tanh(F(m, j)) )", "")], 3)
     B.para("Text", "با ضریب مقیاس η = 0.25 به عنوان تنظیم‌کننده ساختاری و پالایش‌گر روابط همتایان عمل می‌نماید.")
 
-    B.picture(os.path.join(FIG, "fig2_graph_topology_communities.png"))
+    B.picture(os.path.join(FIG, "fig2_topology_fa.png"))
     B.caption("شکل (2) : تصویرسازی دوبعدی تعبیه‌های گراف همتایان پذیرنده در ۸ صنف تجاری؛ حلقه‌های قرمز نشانگر اهداف افت ساختاری تزریق‌شده هستند.")
 
     B.para("Heading 2", "3.4. پیش‌بینی گراف زمانی با تابع دوجمله‌ای منفی")
@@ -699,7 +699,7 @@ def build():
            f"همتایان این پذیرنده به بنچ‌مارک محافظه‌کارانه B^G = {to_fa_num('170.0')} دست یافته‌اند و ضریب اتکای گرافی Q = {to_fa_num('0.90')} است. "
            f"بنابراین شکاف کران-پیش‌بینی همتایان برابر {to_fa_num('58.0')} = {to_fa_num('112.0')} - {to_fa_num('170.0')} (شکاف نسبی {to_fa_num('0.3412')}) بوده و امتیاز M-GATO برابر {to_fa_num('0.307')} = {to_fa_num('0.3412')} × {to_fa_num('0.90')} محاسبه می‌شود. "
            f"تفسیر دقیق: این پذیرنده واجد {to_fa_num('58')} تراکنش شکاف کران-پیش‌بینی نسبت به سقف طبیعی خود تا بنچ‌مارک همتایان است (در حالی که تفاوت با عملکرد فعلی ۷۰ تراکنش است).")
-    B.picture(os.path.join(FIG, "fig3_latent_tsne_comparison.png"))
+    B.picture(os.path.join(FIG, "fig3_guild_heatmap_fa.png"))
     B.caption("شکل (3) : مقایسه مؤلفه‌های شاخص M-GATO: تراکنش مشاهده‌شده، پیش‌بینی مدل، کران بالای طبیعی و بنچ‌مارک همتایان")
 
     # 4 -------------------------------------------------------------------------------- طرح آزمایش
@@ -782,7 +782,7 @@ def build():
         ])
     data_table(B, ["استراتژی رتبه‌بندی", "P@35", "R@35", "R-Prec", "NDCG@35", "MAP@35"], rk_rows, [1200, 690, 690, 690, 690, 690], bold_row=len(rk_rows)-1, font_size=5.3)
 
-    B.picture(os.path.join(FIG, "fig5_benchmark_comparison_bar.png"))
+    B.picture(os.path.join(FIG, "fig5_benchmark_fa.png"))
     B.caption("شکل (4) : مقایسه کمی مدل‌ها در (الف) دقت پیش‌بینی و (ب) کیفیت اولویت‌بندی کمپین در ۱۰ سید تصادفی")
 
     B.para("Text1",
@@ -938,7 +938,7 @@ def build():
         ])
     data_table(B, ["شناسه", "صنف تجاری", "واقعی", "پیش‌بینی", "کران بالا", "بنچ‌مارک", "امتیاز"], opp_rows, [1050, 1000, 520, 520, 520, 520, 520], font_size=5.4)
 
-    B.picture(os.path.join(FIG, "fig4_radar_persona_profiles.png"))
+    B.picture(os.path.join(FIG, "fig4_radar_fa.png"))
     B.caption("شکل (5) : دقت بازیافت فرصت (Precision@K) در سقف‌های مختلف بودجه کمپین بازاریابی")
 
     B.para("Text1",
