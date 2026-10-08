@@ -569,7 +569,12 @@ def build():
     # Load Hamta benchmarks
     df_fc = pd.read_csv(os.path.join(cfg.OUTPUT_DIR, "hamta_forecasting_benchmark.csv"))
     df_rk = pd.read_csv(os.path.join(cfg.OUTPUT_DIR, "hamta_ranking_benchmark.csv"))
-    df_ab = pd.read_csv(os.path.join(cfg.OUTPUT_DIR, "hamta_ablation_results.csv"))
+    ab_path = os.path.join(cfg.OUTPUT_DIR, "table4_ablation_study_10seeds.csv")
+    if not os.path.exists(ab_path):
+        ab_path = os.path.join(cfg.OUTPUT_DIR, "phase1_results", "table4_ablation_study_10seeds.csv")
+    if not os.path.exists(ab_path):
+        ab_path = os.path.join(cfg.OUTPUT_DIR, "hamta_ablation_results.csv")
+    df_ab = pd.read_csv(ab_path) if os.path.exists(ab_path) else pd.DataFrame()
     df_sc = pd.read_csv(os.path.join(cfg.OUTPUT_DIR, "hamta_scenarios_results.csv"))
     df_opp = pd.read_csv(os.path.join(cfg.OUTPUT_DIR, "hamta_top_opportunities.csv"))
     mb_path = os.path.join(cfg.OUTPUT_DIR, "table2b_multibudget_10seeds.csv")
@@ -993,14 +998,29 @@ def build():
         name = ab_fa_names[ri] if ri < len(ab_fa_names) else str(row["Architecture Variant"])[:18]
         raw_sig = str(row.get("Significance", row.get("Significance (Wilcoxon/t)", ""))).strip()
         sig_val = sig_map_fa.get(raw_sig, to_fa_num(raw_sig[:10]))
+        d_val = float(row.get("Delta_NDCG", row.get("Delta NDCG", 0.0)))
+        delta_str = "—" if ri == 0 else to_fa_num(f"{d_val:+.3f}")
+
+        ndcg_val = row.get("NDCG_mean", row.get("NDCG@35", 0.0))
+        prec_val = row.get("Prec_mean", row.get("Precision@35", 0.0))
+        if isinstance(ndcg_val, str) and "±" in ndcg_val:
+            ndcg_str = to_fa_num(ndcg_val.split("±")[0].strip())
+        else:
+            ndcg_str = to_fa_num(f"{float(ndcg_val):.3f}")
+
+        if isinstance(prec_val, str) and "±" in prec_val:
+            prec_str = to_fa_num(prec_val.split("±")[0].strip())
+        else:
+            prec_str = to_fa_num(f"{float(prec_val):.3f}")
+
         ab_rows.append([
             name,
-            to_fa_num(row.get("NDCG_disp", str(row.get("NDCG@35", 0)))),
-            to_fa_num(row.get("Prec_disp", str(row.get("Precision@35", 0.0)))),
-            to_fa_num(f"{row.get('Delta_NDCG', row.get('Delta NDCG', 0.0)):+.3f}"),
+            ndcg_str,
+            prec_str,
+            delta_str,
             sig_val
         ])
-    data_table(B, ["ترکیب معماری", "NDCG@35", "Prec@35", "Δ NDCG", "معناداری آماری"], ab_rows, [1650, 750, 750, 750, 750], bold_row=0, font_size=5.3)
+    data_table(B, ["ترکیب معماری", "NDCG@35", "Prec@35", "Δ NDCG", "معناداری آماری"], ab_rows, [1550, 750, 750, 750, 850], bold_row=0, font_size=5.4)
 
     B.para("Text1",
            f"تحلیل مطالعه تفکیکی و معماری سه‌لایه: معماری HAMTA تفکیک صریحی میان موتور کارایی رتبه‌بندی، سپرهای حفاظتی ریسک و پالایش ساختاری قائل است: "
