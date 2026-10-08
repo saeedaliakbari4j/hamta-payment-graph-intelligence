@@ -27,7 +27,7 @@ from src.config import cfg
 sys.stdout.reconfigure(encoding="utf-8")
 
 BASE = cfg.BASE_DIR
-FIG = os.path.join(BASE, "figures_fa")
+FIG = os.path.join(BASE, "figures")
 TEMPLATE_DOCX = os.path.join(BASE, "template_fa.docx")
 OUT_DOCX = os.path.join(BASE, "FA_From_Transactional_Data_to_Organizational_Intelligence.docx")
 OUT_DOC = OUT_DOCX.replace(".docx", ".doc")
@@ -618,7 +618,7 @@ def build():
     B.para("Heading 1", "3. روش پیشنهادی (چارچوب معماری HAMTA)")
     B.para("Text1",
            "معماری HAMTA شامل جریان پیوسته‌ای از مراحل پردازش است: ساخت گراف دوبخشی، القای گراف همتایان، پیش‌بینی گراف زمانی، واسنجی نااطمینانی، و محاسبه امتیاز M-GATO (شکل (1)).")
-    B.picture(os.path.join(FIG, "fig1_architecture_fa.png"))
+    B.picture(os.path.join(FIG, "fig1_framework_architecture.png"))
     B.caption("شکل (1) : خط لوله معماری چارچوب HAMTA برای کشف فرصت تراکنشی پذیرندگان")
 
     B.para("Heading 2", "3.1. تعریف مسئله و ساختار داده")
@@ -655,7 +655,7 @@ def build():
     B.equation([("w̃", ""), ("mj", "sub"), (" ∝ w", ""), ("mj", "sub"), (" · ( 1 + η · tanh(F(m, j)) )", "")], 3)
     B.para("Text", "با ضریب مقیاس η = 0.25 به عنوان تنظیم‌کننده ساختاری و پالایش‌گر روابط همتایان عمل می‌نماید.")
 
-    B.picture(os.path.join(FIG, "fig2_topology_fa.png"))
+    B.picture(os.path.join(FIG, "fig2_graph_topology_communities.png"))
     B.caption("شکل (2) : تصویرسازی دوبعدی تعبیه‌های گراف همتایان پذیرنده در ۸ صنف تجاری؛ حلقه‌های قرمز نشانگر اهداف افت ساختاری تزریق‌شده هستند.")
 
     B.para("Heading 2", "3.4. پیش‌بینی گراف زمانی با تابع دوجمله‌ای منفی")
@@ -699,7 +699,7 @@ def build():
            f"همتایان این پذیرنده به بنچ‌مارک محافظه‌کارانه B^G = {to_fa_num('170.0')} دست یافته‌اند و ضریب اتکای گرافی Q = {to_fa_num('0.90')} است. "
            f"بنابراین شکاف کران-پیش‌بینی همتایان برابر {to_fa_num('58.0')} = {to_fa_num('112.0')} - {to_fa_num('170.0')} (شکاف نسبی {to_fa_num('0.3412')}) بوده و امتیاز M-GATO برابر {to_fa_num('0.307')} = {to_fa_num('0.3412')} × {to_fa_num('0.90')} محاسبه می‌شود. "
            f"تفسیر دقیق: این پذیرنده واجد {to_fa_num('58')} تراکنش شکاف کران-پیش‌بینی نسبت به سقف طبیعی خود تا بنچ‌مارک همتایان است (در حالی که تفاوت با عملکرد فعلی ۷۰ تراکنش است).")
-    B.picture(os.path.join(FIG, "fig3_guild_heatmap_fa.png"))
+    B.picture(os.path.join(FIG, "fig3_latent_tsne_comparison.png"))
     B.caption("شکل (3) : مقایسه مؤلفه‌های شاخص M-GATO: تراکنش مشاهده‌شده، پیش‌بینی مدل، کران بالای طبیعی و بنچ‌مارک همتایان")
 
     # 4 -------------------------------------------------------------------------------- طرح آزمایش
@@ -738,7 +738,7 @@ def build():
     ]
     for ri, (_, row) in enumerate(df_fc.iterrows()):
         name = short_fa_names[ri] if ri < len(short_fa_names) else str(row["Model"])[:18]
-        nll_val = to_fa_num(row["NLL_disp"]) if ri >= 4 else "—"
+        nll_val = to_fa_num(row.get("NLL_disp", row.get("NB_NLL", 0.0))) if ri >= 4 else "—"
         fc_rows.append([
             name,
             to_fa_num(row.get("MAE_disp", str(row.get("MAE", 0)))),
@@ -774,15 +774,15 @@ def build():
         name = short_rk_fa[ri] if ri < len(short_rk_fa) else str(row["Model / Strategy"])[:15]
         rk_rows.append([
             name,
-            to_fa_num(row["Precision_disp"]),
-            to_fa_num(row["Recall_disp"]),
-            to_fa_num(row["RPrec_disp"]),
+            to_fa_num(row.get("Precision_disp", str(row.get("Precision@35", 0.0)))),
+            to_fa_num(row.get("Recall_disp", str(row.get("Recall@35", 0.0)))),
+            to_fa_num(row.get("RPrec_disp", str(row.get("R-Prec", 0.0)))),
             to_fa_num(row.get("NDCG_disp", str(row.get("NDCG@35", 0)))),
-            to_fa_num(row["MAP_disp"])
+            to_fa_num(row.get("MAP_disp", str(row.get("MAP@35", 0.0))))
         ])
     data_table(B, ["استراتژی رتبه‌بندی", "P@35", "R@35", "R-Prec", "NDCG@35", "MAP@35"], rk_rows, [1200, 690, 690, 690, 690, 690], bold_row=len(rk_rows)-1, font_size=5.3)
 
-    B.picture(os.path.join(FIG, "fig5_benchmark_fa.png"))
+    B.picture(os.path.join(FIG, "fig5_benchmark_comparison_bar.png"))
     B.caption("شکل (4) : مقایسه کمی مدل‌ها در (الف) دقت پیش‌بینی و (ب) کیفیت اولویت‌بندی کمپین در ۱۰ سید تصادفی")
 
     B.para("Text1",
@@ -838,11 +838,11 @@ def build():
         name = sc_fa_names[ri] if ri < len(sc_fa_names) else str(row["Scenario"])[:16]
         sc_rows.append([
             name,
-            to_fa_num(f"{row['Drop Rate']:.2f}"),
+            to_fa_num(f"{row.get('Drop Rate', row.get('Drop', 0.0)):.2f}"),
             to_fa_num(str(row["Precision@35"])),
             to_fa_num(str(row["NDCG@35"])),
             to_fa_num(str(row.get("Weak-Support %", row.get("FPR@35", 0)))),
-            to_fa_num(str(row["Coverage (%)"]))
+            to_fa_num(str(row.get("Coverage (%)", row.get("Coverage", 0.0))))
         ])
     data_table(B, ["سناریوی ارزیابی", "افت", "Prec@35", "NDCG@35", "Weak-Support %", "پوشش"], sc_rows, [1350, 500, 700, 700, 700, 700], bold_row=2, font_size=5.3)
 
@@ -879,13 +879,13 @@ def build():
     }
     for ri, (_, row) in enumerate(df_ab.iterrows()):
         name = ab_fa_names[ri] if ri < len(ab_fa_names) else str(row["Architecture Variant"])[:18]
-        raw_sig = str(row["Significance"]).strip()
+        raw_sig = str(row.get("Significance", row.get("Significance (Wilcoxon/t)", ""))).strip()
         sig_val = sig_map_fa.get(raw_sig, to_fa_num(raw_sig[:10]))
         ab_rows.append([
             name,
             to_fa_num(row.get("NDCG_disp", str(row.get("NDCG@35", 0)))),
-            to_fa_num(row["Prec_disp"]),
-            to_fa_num(f"{row['Delta_NDCG']:+.3f}"),
+            to_fa_num(row.get("Prec_disp", str(row.get("Precision@35", 0.0)))),
+            to_fa_num(f"{row.get('Delta_NDCG', row.get('Delta NDCG', 0.0)):+.3f}"),
             sig_val
         ])
     data_table(B, ["ترکیب معماری", "NDCG@35", "Prec@35", "Δ NDCG", "معناداری آماری"], ab_rows, [1650, 750, 750, 750, 750], bold_row=0, font_size=5.3)
@@ -938,7 +938,7 @@ def build():
         ])
     data_table(B, ["شناسه", "صنف تجاری", "واقعی", "پیش‌بینی", "کران بالا", "بنچ‌مارک", "امتیاز"], opp_rows, [1050, 1000, 520, 520, 520, 520, 520], font_size=5.4)
 
-    B.picture(os.path.join(FIG, "fig4_radar_fa.png"))
+    B.picture(os.path.join(FIG, "fig4_radar_persona_profiles.png"))
     B.caption("شکل (5) : دقت بازیافت فرصت (Precision@K) در سقف‌های مختلف بودجه کمپین بازاریابی")
 
     B.para("Text1",
