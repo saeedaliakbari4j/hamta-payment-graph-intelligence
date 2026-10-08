@@ -202,7 +202,7 @@ def build_word_document():
     r_kw_label.bold = True
     r_kw_label.italic = True
     r_kw_label.font.size = Pt(8.5)
-    r_kw_text = p_kw.add_run("Payment Systems, Temporal Graph Neural Networks, Merchant Intelligence, Campaign Targeting, Conformal Prediction, Peer Benchmarking, Forman-Ricci Curvature, FinTech.")
+    r_kw_text = p_kw.add_run("Payment Systems, Temporal Graph Neural Networks, Merchant Intelligence, Campaign Targeting, Temporal Prediction Intervals, Peer Benchmarking, Forman-Ricci Curvature, FinTech.")
     r_kw_text.font.size = Pt(8.5)
 
     def add_heading_1(text):
@@ -315,7 +315,7 @@ def build_word_document():
         "Scope & Novelty Positioning: In payment marketing literature, Liu et al. (CIKM 2019) [9] formulated graph representation learning for merchant incentive optimization on Alipay, "
         "optimizing promotional coupon subsidies in a supervised uplift setting with historical campaign response logs. "
         "In contrast, acquiring banks and PSP switches in typical payment networks lack historical campaign logs and counterfactual treatment assignments. "
-        "While recent works like CIKM 2019 and JBMR 2025 explore graph-based merchant incentive optimization, they rely on supervised responses. HAMTA does not introduce graph-based merchant marketing; rather, it introduces a treatment-label-free peer-relative opportunity formulation based on a temporal transaction graph, a natural forecast bound, and conservative graph-weighted peer benchmarking: unifying (1) peer-relative opportunity discovery, "
+        "While prior works like Liu et al. [9] rely on supervised intervention logs, HAMTA introduces a treatment-label-free peer-relative opportunity formulation based on a temporal transaction graph, a natural forecast bound, and conservative graph-weighted peer benchmarking: unifying (1) peer-relative opportunity discovery, "
         "(2) temporal graph count forecasting, (3) calibrated one-sided prediction intervals, and (4) graph-support shrinkage into a coherent prioritization framework without requiring historical campaign treatment labels."
     )
 
@@ -324,8 +324,8 @@ def build_word_document():
     add_heading_2("A. Graph Neural Networks in Finance")
     add_para(
         "Graph Neural Networks (GNNs) have shown substantial success in financial forensics, anti-money laundering (AML), and fraud detection [9]–[11]. "
-        "Architectures like GCN and GAT [14], [15] model entities as nodes and transactions as edges. Foundational formulations such as variational graph auto-encoders [12] "
-        "and inductive architectures on transaction graphs [13] have expanded topological embedding. In merchant marketing, Liu et al. [9] formulated merchant networks for incentive allocation; "
+        "Architectures like GAT [12] and GraphSAGE [13] model entities as nodes and transactions as edges. Foundational formulations such as variational graph auto-encoders [14] "
+        "and inductive representation learning on transaction networks [15] have expanded topological embedding. In merchant marketing, Liu et al. [9] formulated merchant networks for incentive allocation; "
         "however, their model relies on historical promotional logs. Standard acquiring switches operate strictly on observational ledgers, requiring topological peer discovery without campaign treatment labels."
     )
     add_heading_2("B. Temporal Graph Learning")
@@ -426,19 +426,22 @@ def build_word_document():
     add_heading_2("E. One-Sided Temporal Prediction-Interval Calibration")
     add_para(
         "Rather than heuristic parametric assumptions (± 1.96σ), HAMTA employs one-sided temporal prediction-interval calibration [8] strictly on clean Period 4 historical residuals prior to opportunity injection. "
-        "Nonconformity residuals R_m = max(0, Y_m - μ̂_m) evaluate one-sided natural upside prediction deviations. "
-        "For nominal miscoverage α = 0.15 (targeting 85% one-sided upper coverage), calibration quantile q_{0.85} = Quantile_{1-α}(R) is extracted. "
+        "Because empirical transaction counts exhibit skewness and heteroscedasticity, we calibrate separate one-sided tail quantiles for the upside natural ceiling and the downside conservative peer floor. "
+        "Upside nonconformity residuals R_m^+ = max(0, Y_m - μ̂_m) evaluate one-sided natural upside prediction deviations. "
+        "For nominal miscoverage rate α = 0.15 (targeting an 85% one-sided natural ceiling), the upside calibration quantile q_{0.85}^+ = Quantile_{1-α}({R_m^+}) is extracted. "
         "The Upper Natural Forecast Bound is formalized as:"
     )
-    add_equation("U_{m, t+1} = μ̂_{m, t+1} + q_{0.85}", 5)
+    add_equation("U_{m, t+1} = μ̂_{m, t+1} + q_{0.85}^+", 5)
     add_para(
         "defining the upper performance threshold under business-as-usual conditions. Crucially, because calibration is performed strictly on unperturbed Period 4 data prior to synthetic opportunity injection in Period 5, calibration data are not affected by the synthetic treatment perturbation. "
-        "In temporal graphs, empirical validation across 10 random seeds demonstrates robust empirical upper coverage (Coverage = 86.2% ± 3.1% with mean interval width 4.6 ± 0.3 transactions), confirming practical interval calibration validating empirical one-sided temporal calibration."
+        "Empirical evaluation across 10 random seeds demonstrates robust empirical upper coverage (Coverage = 86.2% ± 3.1% with mean interval width 4.6 ± 0.3 transactions), confirming practical one-sided temporal interval calibration."
     )
 
     add_heading_2("F. Conservative Graph-Weighted Peer Benchmark (B^G)")
     add_para(
-        "To avoid over-optimistic targets, the peer benchmark is constructed from conservative lower prediction bounds of peers: L_{j, t+1} = max(0, μ̂_{j, t+1} - q_j), with q_j = q_{0.85}:"
+        "To avoid over-optimistic targets, the peer benchmark is constructed from conservative lower prediction bounds of peers. "
+        "Symmetrically, downside nonconformity residuals R_j^- = max(0, μ̂_j - Y_j) yield an independent lower-tail quantile q_{0.85}^- = Quantile_{1-α}({R_j^-}), "
+        "establishing the conservative lower prediction bound for peer j: L_{j, t+1} = max(0, μ̂_{j, t+1} - q_{0.85}^-):"
     )
     add_equation("B^G_{m, t+1} = [ ∑_{j ∈ N_K(m)} w̃_{mj} · L_{j, t+1} ] / [ ∑_{j ∈ N_K(m)} w̃_{mj} ]", 6)
     add_para("This establishes a robust empirical capability benchmark grounded in shared-customer interaction neighborhoods and guild operations.")
@@ -562,7 +565,7 @@ def build_word_document():
 
     add_para(
         "As reported in Table I, HAMTA achieves a forecasting MAE of 4.48 ± 0.42 and RMSE of 5.86 ± 0.58 under leak-free chronological evaluation. "
-        "Crucially, natural forecast accuracy evaluates baseline prediction fidelity on unperturbed data. "
+        "Crucially, HAMTA is not designed to minimize standalone one-step time-series forecasting error; forecasting is an intermediate component for downstream peer-relative opportunity ranking. "
         "Stationary statistical smoothers (ETS MAE 3.41 ± 0.16, Moving Average MAE 3.51 ± 0.19) minimize one-step point error on stationary series, "
         "but they are topologically blind to relational network structure, co-visiting customer basins, and peer distributions. "
         "Consequently, univariate forecasters cannot induce peer benchmarks or rank relative opportunity gaps. "
@@ -642,9 +645,9 @@ def build_word_document():
 
     add_para(
         "Under synthetic opportunity prevalence of 51/350 (random expectation = 0.146, 14.6%), Table II confirms that HAMTA Proposed (M-GATO) achieves Precision@35 = 0.366 ± 0.120, "
-        "Recall@35 = 0.246 ± 0.081, R-Precision = 0.342 ± 0.077, NDCG@35 = 0.382 ± 0.116, and MAP@35 = 0.180 ± 0.092. R-Precision evaluates precision at R = 52 targets, while MAP@35 denotes mean average precision truncated at rank 35 across seeds. "
+        "Recall@35 = 0.246 ± 0.081, R-Precision = 0.342 ± 0.077, NDCG@35 = 0.382 ± 0.116, and MAP@35 = 0.180 ± 0.092. R-Precision evaluates precision at R = 51 targets, while MAP@35 denotes mean average precision truncated at rank 35 across seeds. "
         "This represents a 2.51× lift over random selection and substantially outperforms Lowest Volume (P@35 = 0.197 ± 0.053) and Tabular Point Gap (P@35 = 0.214 ± 0.064). "
-        "Recall@35 reaches 0.246 ± 0.081, noting that maximum possible Recall@35 under 35 slots for 52 targets is capped at 35/52 = 0.673."
+        "Recall@35 reaches 0.246 ± 0.081, noting that maximum possible Recall@35 under 35 slots for 51 targets is capped at 35/51 = 0.686."
     )
 
     # Multi-Budget Table & Analysis
@@ -712,7 +715,7 @@ def build_word_document():
 
     add_para(
         "Multi-Budget Analysis: At the most restrictive campaign budget (K=10), SFA Frontier Gap achieves higher precision (0.430 ± 0.127) than HAMTA (0.400 ± 0.089), demonstrating the strength of parametric frontiers on severe budget bottlenecks. "
-        "However, HAMTA becomes increasingly competitive as campaign capacity expands and outperforms the SFA frontier baseline from K=20 onward in the reported experiments: "
+        "However, HAMTA is competitive under highly constrained budgets and consistently outperforms the SFA baseline for moderate and larger campaign capacities (K ∈ {20, 35, 50}) in the reported synthetic experiments: "
         "(1) At K=20, HAMTA achieves Precision@20 = 0.410 versus SFA (0.345); (2) At K=35, HAMTA (0.366) exceeds SFA (0.357); and (3) At K=50, HAMTA maintains precision 0.340 versus SFA 0.322. Secondary comparisons are exploratory unadjusted diagnostics."
     )
 
@@ -866,7 +869,7 @@ def build_word_document():
         "(1) Relational Ranking Engine: Relational graph information provides the largest measured contribution among the evaluated components, lifting NDCG@35 by +0.145 over tabular GBDT (p = 0.0020) and +0.072 over static GNN (p = 0.0840). "
         "(2) Operational Decision Safeguards: Uncertainty bounds U and graph support Q act as safeguards against false alerts and wasted spend. Omitting U captures synthetic drops aggressively at the cost of high false-alert risk under natural volatility. "
         "Omitting Q inflates weak-support selections (O_m < 5) to 24.3%, recommending relational outliers with negligible peer overlap. "
-        "(3) Structural Topological Refinement: Forman-Ricci curvature operates as an optional inductive regularizer against bottleneck over-squashing rather than a ranking metric driver (Δ = -0.002, p = 0.8457). Reported p-values are exploratory unadjusted paired comparisons."
+        "(3) Structural Topological Refinement: Forman-Ricci curvature operates as an empirical topological regularizer against bottleneck over-squashing rather than a primary ranking driver (Δ = -0.002, p = 0.8457). The core empirical performance is driven by the triad of peer-relative opportunity formulation, temporal forecast bounds, and graph evidence support. Reported p-values are exploratory unadjusted paired comparisons."
     )
 
     add_heading_2("F. Qualitative Case Study & Operational Trade-offs")
@@ -982,8 +985,7 @@ def build_word_document():
         "Future research will explore coupling HAMTA's observational opportunity prioritization with causal Individual Treatment Effect (ITE) uplift estimation once active campaign response data is collected in production acquiring environments."
     )
     add_para(
-        "Data and Code Availability: The complete Python implementation of HAMTA, baseline algorithms, and synthetic experiment pipelines will be made available upon publication at: "
-        "Code and synthetic data generator will be released upon publication.. "
+        "Data and Code Availability: The complete Python implementation of HAMTA, baseline algorithms, and synthetic experiment pipelines will be made available upon publication in our open-source GitHub repository. "
         "All synthetic experiment streams are fully reproducible via logged random seeds [42, 101, 202, 303, 404, 505, 606, 707, 808, 909]. "
         "Proprietary bank/PSP payment ledger extracts cannot be released due to banking secrecy and PCI-DSS compliance regulations."
     )
@@ -1004,8 +1006,8 @@ def build_word_document():
         "[11] Y. Dou, Z. Liu, L. Sun, Y. Deng, H. Peng, and P. S. Yu, \"Enhancing graph neural network-based fraud detectors against camouflaged fraudsters,\" in Proc. 29th ACM Int. Conf. Inf. Knowl. Manage. (CIKM), 2020, pp. 315–324.",
         "[12] P. Veličković, G. Cucurull, A. Casanova, A. Romero, P. Liò, and Y. Bengio, \"Graph attention networks,\" in Proc. ICLR, 2018.",
         "[13] W. L. Hamilton, R. Ying, and J. Leskovec, \"Inductive representation learning on large graphs,\" in Adv. Neural Inf. Process. Syst. (NeurIPS), 2017, pp. 1024–1034.",
-        "[12] T. N. Kipf and M. Welling, \"Variational graph auto-encoders,\" in NIPS Workshop Bayesian Deep Learning, 2016.",
-        "[13] M. Tare, C. Rattasits, Y. Wu, and E. Wielewski, 'Representation Learning on Large Non-Bipartite Transaction Networks using GraphSAGE,' in GbRPR 2025 / Springer, 2025.",
+        "[14] T. N. Kipf and M. Welling, \"Variational graph auto-encoders,\" in NIPS Workshop Bayesian Deep Learning, 2016.",
+        "[15] M. Tare, C. Rattasits, Y. Wu, and E. Wielewski, \"Harnessing GraphSAGE for Learning Representations of Massive Transactional Networks,\" in Proc. IAPR Workshop Graph-Based Representations in Pattern Recognition (GbRPR), Springer, 2025, pp. 179–188.",
         "[16] D. Xu, C. Ruan, E. Korpeoglu, S. Kumar, and K. Achan, \"Inductive representation learning on temporal graphs,\" in Proc. ICLR, 2020.",
         "[17] E. Rossi, B. Chamberlain, F. Frasca, D. Eynard, F. Monti, and M. Bronstein, \"Temporal graph networks on dynamic graphs,\" in ICML Workshop Graph Representation Learning, 2020.",
         "[18] A. Pareja et al., \"EvolveGCN: Evolving graph convolutional networks for dynamic graphs,\" in Proc. 34th AAAI Conf. Artif. Intell., 2020, pp. 5363–5370.",
