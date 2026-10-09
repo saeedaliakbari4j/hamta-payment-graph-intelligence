@@ -41,7 +41,7 @@ def to_fa_num(s):
         return ""
     if not isinstance(s, str):
         s = str(s)
-    s = s.replace(" ± ", "\u00A0±\u00A0").replace(" - ", "\u00A0–\u00A0")
+    s = s.replace(" ± ", " ± ").replace(" - ", " – ")
     s = re.sub(r'(\d)\.(\d)', r'\1٫\2', s)
     s = re.sub(r'(\d),(\d)', r'\1٬\2', s)
     trans = str.maketrans('0123456789', '۰۱۲۳۴۵۶۷۸۹')
@@ -52,6 +52,7 @@ def to_fa_num(s):
 # Prevents expressions like O(|C(m)| log K), [x]_+ = max(0, x), or citations [6, 7, 22] from being split across RTL runs
 TOKEN = re.compile(
     r'(?P<cite>\[[\d\.]+(?:[\s,\-–]+[\d\.]+)*\])'
+    r'|(?P<parens_lat>\([A-Za-z0-9_\u0300-\u036fΔ\s\-\+\.,/=:≈±∈≤≥<>|~*]+\))'
     r'|(?P<bigo>O\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))'
     r'|(?P<bracket_eq>\[[^\]]+\]_?\+?\s*=\s*[A-Za-z0-9_\u0300-\u036f\(\),\s]+)'
     r'|(?P<topk>Top-K(?:\s*\([^\)]+\))?)'
@@ -949,8 +950,9 @@ def build():
            f"در بودجه K = 20 دقت {to_fa_num('0.410')} در برابر {to_fa_num('0.345')}؛ در K = 35 دقت {to_fa_num('0.366')} در برابر {to_fa_num('0.357')}؛ و در K = 50 دقت {to_fa_num('0.340')} در برابر {to_fa_num('0.322')}. "
            "تحت تصحیح هولم-بونفرونی برای مقایسه‌های چندگانه، برتری‌های HAMTA نسبت به خط‌مبناهای سنتی کمترین حجم و مدل جدولی در تمامی بودجه‌ها کاملاً معنادار باقی می‌ماند (p_adj < 0.05): "
            "در بودجه K = 10 نسبت به کمترین حجم (p_adj = 0.0156) و مدل جدولی (p_adj = 0.0293)؛ در بودجه K = 20 نسبت به کمترین حجم (p_adj = 0.0156) و مدل جدولی (p_adj = 0.0176)؛ "
-           "و در K = 35 نسبت به کمترین حجم (p_adj = 0.0176) و مدل جدولی (p_adj = 0.0078). نسبت به گراف ایستا در K = 35، آزمون خام ویلکاکسون معنادار است (p = 0.0488) که پس از تصحیح هولم-بونفرونی به p_adj = 0.0977 تعدیل می‌شود. "
-           "تفاوت‌های HAMTA با خط‌مبنای SFA به سطح معناداری آماری نمی‌رسد و SFA به عنوان یک بنچ‌مارک مرزی ناپارامتریک قدرتمند عمل می‌نماید.")
+           "در K = 35 نسبت به کمترین حجم (p_adj = 0.0176) و مدل جدولی (p_adj = 0.0078)؛ و در بودجه K = 50 نسبت به کمترین حجم (p_adj = 0.0078) و مدل جدولی (p_adj = 0.0078). "
+           "در مقابل، نسبت به گراف ایستا برتری در K = 35 دارای p_adj = 0.0977 (آزمون خام p = 0.0488) و در K = 50 به صورت حاشیه‌ای با p_adj = 0.0586 است. "
+           "همچنین تفاوت‌های HAMTA با خط‌مبنای مرزی SFA در هیچ‌یک از بودجه‌ها به معناداری آماری نمی‌رسد (در K = 50 مقدار p_adj = 0.6094)، که نشان‌دهنده رقابت‌پذیری بالای روش مرزی ناپارامتریک است.")
 
     B.para("Heading 2", "5.4. ارزیابی استحکام و تحلیل عدم دورباطل در سناریوها")
     B.para("Text1",
@@ -1088,7 +1090,8 @@ def build():
 
     B.para("Text1",
            f"تحلیل تورش پذیرندگان خرد (Micro-Merchant Bias): به دلیل مخرج کوچک در پذیرندگان کم‌تراکنش، شاخص M-GATO در حالت خام به پذیرندگان خرد حساس است ({to_fa_num('56.0 ± 16.5')}٪ کاندیداهای زیر ۱۰ تراکنش). "
-           f"بررسی حساسیت نشان می‌دهد اعمال آستانه‌های تراکنش Y ≥ 5، 10 و 20، سهم کاندیداهای خرد را به ترتیب به ۳۴٫۱٪، ۱۸٫۲٪ و ۴٫۳٪ کاهش می‌دهد. اعمال فیلتر ۱۰ تراکنش دقت را در سطح {to_fa_num('0.286 ± 0.056')} و NDCG را در {to_fa_num('0.327 ± 0.077')} تثبیت می‌نماید. "
+           f"بررسی حساسیت طراحی امتیاز نشان می‌دهد اعمال فیلتر حداقل تراکنش Y ≥ 10 سهم کاندیداهای خرد را کاملاً به صفر ({to_fa_num('0.0 ± 0.0')}٪) رسانده و دقت را در {to_fa_num('0.286 ± 0.056')} و NDCG را در {to_fa_num('0.327 ± 0.077')} تثبیت می‌نماید. "
+           f"فرمولاسیون ترکیبی مطلق-نسبی سهم پایانه‌های خرد را به {to_fa_num('47.7 ± 18.6')}٪ تعدیل کرده و تعادل بهتری با دقت {to_fa_num('0.363 ± 0.102')} و NDCG برابر {to_fa_num('0.374 ± 0.104')} فراهم می‌سازد. "
            "همچنین ضریب پیوسته اتکای فعالیت با τ_a = 15 به عنوان نسخه عملیاتی توصیه‌شده (به جای فیلتر آستانه‌ای سخت)، نوسانات پذیرندگان بسیار خرد را مهار می‌سازد:")
     B.formula_line("Q_total = Q_graph · ( 1 - exp( -Y_m / τ_a ) )")
     B.para("Text",
@@ -1131,7 +1134,7 @@ def build():
         [("J. Topping, F. Di Giovanni, B. P. Chamberlain, X. Dong, M. M. Bronstein, \"Understanding over-squashing and bottlenecks via curvature\", ", 0),
          ("Proc. 10th Int. Conf. on Learning Representations (ICLR)", 1), (", 2022.", 0)],
         [("I. Marisca, J. Bamberger, C. Alippi, M. M. Bronstein, \"Over-squashing in spatiotemporal graph neural networks\", ", 0),
-         ("Advances in Neural Information Processing Systems (NeurIPS 38)", 1), (", Vol. 38, pp. 38213-38243, 2024.", 0)],
+         ("Advances in Neural Information Processing Systems (NeurIPS 38)", 1), (", Vol. 38, pp. 38213-38243, 2025.", 0)],
         [("A. N. Angelopoulos, S. Bates, \"A gentle introduction to conformal prediction and distribution-free uncertainty\", ", 0),
          ("arXiv preprint arXiv:2107.07511", 1), (", 2021.", 0)],
         [("Z. Liu, D. Wang, Q. Yu, Z. Zhang, Y. Shen, J. Ma, W. Zhong, J. Gu, J. Zhou, S. Yang, Y. Qi, \"Graph representation learning for merchant incentive optimization in mobile payment marketing\", ", 0),

@@ -718,8 +718,9 @@ def build_word_document():
         "However, as campaign capacity expands, HAMTA scales more effectively and overtakes SFA at K = 20 (0.410 vs. 0.345), K = 35 (0.366 vs. 0.357), and K = 50 (0.340 vs. 0.322). "
         "Under Holm-Bonferroni adjustment across evaluated baselines, HAMTA maintains statistically significant superiority (p_adj < 0.05) over conventional baselines: "
         "at K = 10 against Lowest Volume (p_adj = 0.0156) and Tabular GBDT (p_adj = 0.0293); at K = 20 against Lowest Volume (p_adj = 0.0156) and Tabular GBDT (p_adj = 0.0176); "
-        "and at K = 35 against Lowest Volume (p_adj = 0.0176) and Tabular GBDT (p_adj = 0.0078). Against Static GNN at K = 35, the raw paired Wilcoxon test is significant (p = 0.0488), "
-        "adjusting to p_adj = 0.0977 under Holm-Bonferroni. Differences between HAMTA and SFA across budgets do not reach statistical significance, establishing SFA as a competitive non-parametric frontier benchmark."
+        "at K = 35 against Lowest Volume (p_adj = 0.0176) and Tabular GBDT (p_adj = 0.0078); and at K = 50 against Lowest Volume (p_adj = 0.0078) and Tabular GBDT (p_adj = 0.0078). "
+        "Against Static GNN, the comparison is marginally significant at K = 50 (p_adj = 0.0586, raw p = 0.0293) and p_adj = 0.0977 at K = 35 (raw p = 0.0488). "
+        "Differences between HAMTA and SFA across budgets do not reach statistical significance (e.g., p_adj = 0.6094 at K = 50), establishing SFA as a competitive non-parametric frontier benchmark."
     )
 
     add_heading_2("D. Multi-Scenario Circularity & Robustness Evaluation")
@@ -958,8 +959,8 @@ def build_word_document():
 
     add_para(
         "Micro-Merchant Bias & Activity Threshold Sensitivity: Because M-GATO calculates a relative performance ratio, 56.0% ± 16.5% of top candidates in the unconstrained formulation are micro-merchants (< 10 transactions) due to ratio sensitivity with small denominators. "
-        "Evaluating activity thresholds reveals clear operational trade-offs: Y >= 5 retains 22.4% low-volume terminals with NDCG@35 = 0.355 ± 0.082; Y >= 10 eliminates micro-merchants entirely while maintaining competitive targeting (NDCG@35 = 0.327 ± 0.077, P@35 = 0.286 ± 0.056); "
-        "and Y >= 20 restricts targeting to mature enterprises (NDCG = 0.298, P@35 = 0.245). Alternatively, incorporating a continuous exponential discount factor Q_total = Q_graph · (1 - exp(-Y_m / τ_a)) with τ_a = 15 is recommended as the operational deployment formulation to smoothly dampen low-volume noise without hard threshold cuts."
+        "Evaluating activity thresholds reveals clear operational trade-offs: Y >= 5 retains 22.4% low-volume terminals with NDCG@35 = 0.355 ± 0.082; Y >= 10 eliminates micro-merchants entirely (0.0% ± 0.0%) while maintaining competitive targeting (NDCG@35 = 0.327 ± 0.077, P@35 = 0.286 ± 0.056); "
+        "and Hybrid Absolute-Relative M-GATO curbs micro-merchant share to 47.7% ± 18.6% while preserving higher ranking performance (NDCG@35 = 0.374 ± 0.104, P@35 = 0.363 ± 0.102). Alternatively, incorporating a continuous exponential discount factor Q_total = Q_graph · (1 - exp(-Y_m / τ_a)) with τ_a = 15 is recommended as the operational deployment formulation to smoothly dampen low-volume noise without hard threshold cuts."
     )
     add_para(
         "Threats to Validity: (1) Peer Cannibalization: the framework assumes independent customer demand; localized competitive cannibalization between neighboring POS terminals is not explicitly modeled. "
